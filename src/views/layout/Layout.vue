@@ -5,9 +5,7 @@
         <img src="src/assets/tt.jpg" alt="">
         <span>图腾框架</span>
       </div>
-      <div class="right">
 
-      </div>
     </div>
     <div :class="classObj" class="app-wrapper">
       <div v-if="device==='mobile'&&sidebar.opened" class="drawer-bg" @click="handleClickOutside"/>
