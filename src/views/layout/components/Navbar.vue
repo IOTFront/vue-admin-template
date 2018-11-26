@@ -70,7 +70,9 @@ export default {
   .avatar-container {
     height: 50px;
     display: inline-block;
-    position: absolute;
+    position: fixed;
+    top:0;
+    z-index: 101;
     right: 35px;
     .avatar-wrapper {
       cursor: pointer;
@@ -84,9 +86,9 @@ export default {
       }
       .el-icon-caret-bottom {
         position: absolute;
-        right: -20px;
-        top: 25px;
-        font-size: 12px;
+        right: -22px;
+        top: 20px;
+        font-size: 18px;
       }
     }
   }
