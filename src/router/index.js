@@ -29,12 +29,27 @@ export const constantRouterMap = [
     path: '/',
     component: Layout,
     redirect: '/dashboard',
-    name: 'Dashboard',
+    name: 'Home',
     hidden: true,
+    meta: { title: 'Home', icon: 'example' },
     children: [{
       path: 'dashboard',
       component: () => import('@/views/dashboard/index')
     }]
+  },
+
+  {
+    path: '/',
+    component: Layout,
+    name: 'Home',
+    children: [
+      {
+        name: 'Home',
+        path: 'Home',
+        component: () => import('@/views/dashboard/index'),
+        meta: { title: 'Home', icon: 'form' }
+      }
+    ]
   },
 
   {

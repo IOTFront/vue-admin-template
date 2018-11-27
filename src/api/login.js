@@ -2,18 +2,18 @@ import request from '@/utils/request'
 
 export function login(username, password) {
   return request({
-    url: '/user/login',
+    url: '/j_spring_security_check',
     method: 'post',
     data: {
-      username,
-      password
+      j_username: username,
+      j_password: password
     }
   })
 }
 
 export function getInfo(token) {
   return request({
-    url: '/user/info',
+    url: '/fwUser/getCurrentFwUser',
     method: 'get',
     params: { token }
   })
