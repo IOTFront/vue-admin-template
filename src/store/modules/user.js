@@ -1,5 +1,5 @@
 import { login, logout, getInfo } from '@/api/login'
-import { getToken, setToken, removeToken, setUser} from '@/utils/auth'
+import { getToken, setToken, removeToken, setUser } from '@/utils/auth'
 
 const user = {
   state: {
@@ -49,7 +49,7 @@ const user = {
           if (data.roles && data.roles.length > 0) { // 验证返回的roles是否是一个非空数组
             commit('SET_ROLES', data.roles)
           } else {
-
+            commit('SET_ROLES', '')
           }
           commit('SET_NAME', data.name)
           commit('SET_AVATAR', data.avatar)

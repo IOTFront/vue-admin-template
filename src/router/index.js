@@ -29,9 +29,9 @@ export const constantRouterMap = [
     path: '/',
     component: Layout,
     redirect: '/dashboard',
-    name: 'Home',
+    name: '概览页',
     hidden: true,
-    meta: { title: 'Home', icon: 'example' },
+    meta: { title: '概览页', icon: 'guide' },
     children: [{
       path: 'dashboard',
       component: () => import('@/views/dashboard/index')
@@ -41,13 +41,13 @@ export const constantRouterMap = [
   {
     path: '/',
     component: Layout,
-    name: 'Home',
+    name: '概览页',
     children: [
       {
-        name: 'Home',
+        name: '概览页',
         path: 'Home',
         component: () => import('@/views/dashboard/index'),
-        meta: { title: 'Home', icon: 'form' }
+        meta: { title: '概览页', icon: 'guide' }
       }
     ]
   },

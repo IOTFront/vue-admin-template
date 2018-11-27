@@ -1,11 +1,13 @@
 <template>
   <div class="appOuterAllCont">
     <div class="appTopBanner">
-      <div class="rightCOnts">
+      <div class="leftConts">
         <img src="src/assets/tt.jpg" alt="">
         <span>图腾框架</span>
       </div>
-
+      <div class="topRightCOnts">
+        <layoutTop/>
+      </div>
     </div>
     <div :class="classObj" class="app-wrapper">
       <div v-if="device==='mobile'&&sidebar.opened" class="drawer-bg" @click="handleClickOutside"/>
@@ -21,13 +23,15 @@
 <script>
 import { Navbar, Sidebar, AppMain } from './components'
 import ResizeMixin from './mixin/ResizeHandler'
+import layoutTop from './components/layoutTop'
 
 export default {
   name: 'Layout',
   components: {
     Navbar,
     Sidebar,
-    AppMain
+    AppMain,
+    layoutTop
   },
   mixins: [ResizeMixin],
   computed: {
@@ -55,7 +59,13 @@ export default {
 </script>
 
 <style rel="stylesheet/scss" lang="scss" scoped>
-  @import "src/styles/mixin.scss";
+  @import 'src/styles/mixin.scss';
+
+  .topRightCOnts{
+    float: right;
+    height: 50px;
+    line-height: 50px;
+  }
   .appTopBanner{
     height: 50px;
     position: absolute;
@@ -65,7 +75,7 @@ export default {
     z-index: 100;
     background: #304156;
     border-bottom: 1px solid rgba(28, 146, 34, 0.6);
-    .rightCOnts{
+    .leftConts{
       display: inline-block;
       padding: 5px 20px;
       img{
