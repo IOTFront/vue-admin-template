@@ -22,10 +22,10 @@
         </el-form>
       </div>
       <div class="tableControl">
-        <el-button type="success" round>新增</el-button>
+        <el-button type="success" round @click="addUser">新增</el-button>
         <el-button type="danger" round>批量删除</el-button>
       </div>
-      <div class="tableConts">
+      <div v-loading="tableLoading" class="tableConts">
         <el-table
           :data="table.data"
           border
@@ -71,15 +71,16 @@
             </template>
           </el-table-column>
         </el-table>
+        <div>
+          <pagination
+            :total="table.count"
+            :pager="table.param.index"
+            :pagesize="table.param.size"
+            @pagersizechange="pagerSizeChange"
+            @pagerchange="pagerChange"/>
+        </div>
       </div>
-      <div>
-        <pagination
-          :total="table.count"
-          :pager="table.param.index"
-          :pagesize="table.param.size"
-          @pagersizechange="pagerSizeChange"
-          @pagerchange="pagerChange"/>
-      </div>
+
     </div>
   </div>
 </template>
@@ -107,7 +108,8 @@ export default {
         },
         count: 0,
         selectArry: ''
-      }
+      },
+      tableLoading: true
     }
   },
   created: function() {
@@ -118,6 +120,7 @@ export default {
       console.log(row)
     },
     handleSearch: function() {
+      this.tableLoading = false
       this.fetchData()
     },
     handleSelectionChange: function(res) {
@@ -131,6 +134,8 @@ export default {
       this.table.param.size = size
       this.table.param.index = 1
       this.fetchData()
+    },
+    addUser: function() {
     },
     fetchData() {
       this.listLoading = true
