@@ -66,7 +66,12 @@
         </el-table>
       </div>
       <div>
-        <pagination/>
+        <pagination
+          :total="table.param.allNums"
+          :pager="table.param.pager"
+          :pagesize="table.param.pageSize"
+          @pagersizechange="pagerSizeChange"
+          @pagerchange="pagerChange"/>
       </div>
     </div>
   </div>
@@ -86,7 +91,10 @@ export default {
         data: [],
         param: {
           USER_ACCOUNT: '',
-          USER_SEX: ''
+          USER_SEX: '',
+          pager: 1,
+          pageSize: 2,
+          allNums: 0
         },
         selectArry: ''
       }
@@ -103,13 +111,22 @@ export default {
       this.fetchData()
     },
     handleSelectionChange: function(res) {
-      console.log(res)
       this.table.selectArry = res
+    },
+    pagerChange: function(pager) {
+      this.table.param.pager = pager
+      this.fetchData()
+    },
+    pagerSizeChange: function(size) {
+      this.table.param.pageSize = size
+      this.table.param.pager = 1
+      this.fetchData()
     },
     fetchData() {
       this.listLoading = true
-      getUserList(this.listQuery).then(response => {
+      getUserList(this.table.param).then(response => {
         this.table.data = response.data.listMapData
+        this.table.param.allNums = response.data.count
         this.listLoading = false
       })
     }
