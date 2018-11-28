@@ -1,5 +1,5 @@
 <template>
-  <div class="appOuterAllCont">
+  <div class="appOuterAllCont el-header">
     <div class="appTopBanner">
       <div class="leftConts">
         <img src="src/assets/tt.jpg" alt="">
@@ -63,11 +63,11 @@ export default {
 
   .topRightCOnts{
     float: right;
-    height: 50px;
-    line-height: 50px;
+    height: 60px;
+    line-height: 60px;
   }
   .appTopBanner{
-    height: 50px;
+    height: 60px;
     position: absolute;
     top: 0;
     left: 0;
@@ -77,7 +77,7 @@ export default {
     border-bottom: 1px solid rgba(28, 146, 34, 0.6);
     .leftConts{
       display: inline-block;
-      padding: 5px 20px;
+      padding: 10px 20px;
       img{
         width: 40px;
         height: 40px;
@@ -86,7 +86,7 @@ export default {
       span{
         display: inline-block;
         position: absolute;
-        top:5px;
+        top:10px;
         height:40px;
         line-height: 40px;
         left: 70px;

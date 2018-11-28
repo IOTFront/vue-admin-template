@@ -5,17 +5,17 @@
     transition: margin-left .28s;
     margin-left: 180px;
     position: relative;
-    padding-top: 50px;
+    padding-top: 61px;
   }
   // 侧边栏
   .sidebar-container {
     transition: width 0.28s;
     width: 180px !important;
     height: 100%;
-    height: calc(100vh - 50px);
+    height: calc(100vh - 60px);
     position: fixed;
     font-size: 0px;
-    top: 50px;
+    top: 60px;
     bottom: 0;
     left: 0;
     z-index: 1001;
