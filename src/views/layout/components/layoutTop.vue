@@ -18,25 +18,25 @@
 </template>
 
 <script>
-  import {mapGetters} from 'vuex'
+import { mapGetters } from 'vuex'
 
-  export default {
-    computed: {
-      ...mapGetters([
-        'avatar'
-      ])
+export default {
+  computed: {
+    ...mapGetters([
+      'avatar'
+    ])
+  },
+  methods: {
+    toggleSideBar() {
+      this.$store.dispatch('ToggleSideBar')
     },
-    methods: {
-      toggleSideBar() {
-        this.$store.dispatch('ToggleSideBar')
-      },
-      logout() {
-        this.$store.dispatch('LogOut').then(() => {
-          location.reload() // 为了重新实例化vue-router对象 避免bug
-        })
-      }
+    logout() {
+      this.$store.dispatch('LogOut').then(() => {
+        location.reload() // 为了重新实例化vue-router对象 避免bug
+      })
     }
   }
+}
 </script>
 
 <style rel="stylesheet/scss" lang="scss" scoped>

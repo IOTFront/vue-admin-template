@@ -6,6 +6,8 @@
 </template>
 
 <script>
+/* eslint-disable indent */
+
   import { mapGetters } from 'vuex'
   import Breadcrumb from '@/components/Breadcrumb'
   import Hamburger from '@/components/Hamburger'
