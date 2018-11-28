@@ -28,10 +28,11 @@ service.interceptors.request.use(
 service.interceptors.response.use(
   response => {
     /**
-     * code为非20000是抛错 可结合自己业务进行修改
+     * code为非200是抛错 可结合自己业务进行修改, response.status为链接返回的回调，一样做报错处理
      */
     const res = response.data
-    if (res.code !== 200) {
+    const resState = response.status
+    if (res.code !== 200 || resState !== 200) {
       Message({
         message: res.message,
         type: 'error',
@@ -39,7 +40,7 @@ service.interceptors.response.use(
       })
 
       // 422 过期了;
-      if (res.code === 422) {
+      if (res.code === 422 || resState === 422) {
         MessageBox.confirm(
           '您的用户信息已过期，您可以停留在当前页面或者重新登录',
           '提示',
@@ -53,12 +54,21 @@ service.interceptors.response.use(
             location.reload() // 为了重新实例化vue-router对象 避免bug
           })
         })
-      }
-
-      // 422 过期了;
-      if (res.code === 403 || res.code === 420 || res.code === 421 || res.code === 425) {
+      } else if (res.code === 403 || res.code === 420 || res.code === 421 || res.code === 425 || resState === 403 || resState === 420 || resState === 421 || resState === 425) { // 403 420 421 425过期了;
         MessageBox.alert(
           res.message,
+          '提示',
+          {
+            confirmButtonText: '确定'
+          }
+        ).then(() => {
+          store.dispatch('FedLogOut').then(() => {
+            location.reload() // 为了重新实例化vue-router对象 避免bug
+          })
+        })
+      } else {
+        MessageBox.alert(
+          '您的访问有误，请稍后再试！',
           '提示',
           {
             confirmButtonText: '确定'
