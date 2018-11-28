@@ -9,7 +9,7 @@
         background-color="#304156"
         text-color="#bfcbd9"
         active-text-color="#409EFF">
-        <transition name="fade-transform" mode="out-in">
+        <transition name="fade" mode="out-in">
           <!-- or name="fade" -->
           <!-- <router-view :key="key"></router-view> -->
           <router-view/>

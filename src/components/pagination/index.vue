@@ -2,9 +2,10 @@
   <div class="pagination">
     <el-pagination
       :current-page="pager"
-      :page-sizes="[2,3,4,5,10, 20, 50, 100]"
+      :page-sizes="[10, 20, 50, 100]"
       :page-size="pagesize"
       :total="total"
+      background
       layout="total, sizes, prev, pager, next, jumper"
       @size-change="handleSizeChange"
       @current-change="handleCurrentChange"/>

@@ -1,5 +1,5 @@
 <template>
-  <div class="userConts">
+  <div class="app-container">
     <div class="tableOutConts">
       <div class="searchPanel">
         <el-form :inline="true" :model="table.param" class="el-form-conts">
@@ -63,10 +63,11 @@
           <el-table-column
             fixed="right"
             label="操作"
-            width="100">
+            width="160">
             <template slot-scope="scope">
               <el-button type="text" size="small" @click="handleClick(scope.row)">查看</el-button>
               <el-button type="text" size="small">编辑</el-button>
+              <el-button type="text" size="small">删除</el-button>
             </template>
           </el-table-column>
         </el-table>
@@ -102,7 +103,7 @@ export default {
           orgId: '',
           roleId: '',
           index: 1,
-          size: 2
+          size: 10
         },
         count: 0,
         selectArry: ''
