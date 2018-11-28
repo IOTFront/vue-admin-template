@@ -37,6 +37,27 @@ export const constantRouterMap = [
       }
     ]
   },
+  {
+    path: '/systemSet',
+    component: Layout,
+    redirect: '/systemSet/menu',
+    name: '系统设置',
+    meta: { title: '系统设置', icon: '系统设置' },
+    children: [
+      {
+        path: 'menu',
+        name: '菜单管理',
+        component: () => import('@/views/systemSet/menu'),
+        meta: { title: '菜单管理', icon: '菜单管理' }
+      },
+      {
+        path: 'user',
+        name: '用户管理',
+        component: () => import('@/views/systemSet/user'),
+        meta: { title: '用户管理', icon: '用户' }
+      }
+    ]
+  },
 
   {
     path: '/icon',

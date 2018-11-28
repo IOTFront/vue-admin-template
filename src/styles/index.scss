@@ -67,6 +67,26 @@ a:hover {
     height: 0;
   }
 }
+//表格相关设置
+.tableOutConts{
+  padding-right: 20px;
+  .tableConts{
+    margin-top: 20px;
+    .el-table td{
+      padding: 0;
+    }
+  }
+  .searchPanel{
+    margin-top: 20px;
+    padding: 20px 20px 0 20px;
+    border: 1px solid #ededed;
+    border-radius: 3px;
+    background: #fcfcfc;
+  }
+  .tableControl{
+    margin-top: 20px;
+  }
+}
 
 //main-container全局样式
 .app-main{
