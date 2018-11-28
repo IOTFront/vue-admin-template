@@ -22,7 +22,7 @@
         </el-form>
       </div>
       <div class="tableControl">
-        <el-button type="success" round @click="addUser">新增</el-button>
+        <el-button type="success" round @click="addUserBtn">新增</el-button>
         <el-button type="danger" round>批量删除</el-button>
       </div>
       <div v-loading="tableLoading" class="tableConts">
@@ -80,8 +80,29 @@
             @pagerchange="pagerChange"/>
         </div>
       </div>
-
     </div>
+    <!--添加对话框-->
+    <el-dialog :title="addOrEditTitle" :visible.sync="addShowBol">
+      <el-form ref="dataForm" label-position="left" label-width="70px" style="width: 400px; margin-left:50px;">
+        <el-form-item label="账号" prop="title">
+          <el-input v-model="test"/>
+        </el-form-item>
+        <el-form-item label="用户名" prop="title">
+          <el-input v-model="test"/>
+        </el-form-item>
+        <el-form-item label="用户密码" prop="title">
+          <el-input v-model="test"/>
+        </el-form-item>
+        <el-form-item label="手机号码" prop="title">
+          <el-input v-model="test"/>
+        </el-form-item>
+
+      </el-form>
+      <div slot="footer" class="dialog-footer">
+        <el-button @click="addShowBol = false">取 消</el-button>
+        <el-button type="primary" @click="addUserAction">确 定</el-button>
+      </div>
+    </el-dialog>
   </div>
 </template>
 
@@ -109,7 +130,10 @@ export default {
         count: 0,
         selectArry: ''
       },
-      tableLoading: true
+      tableLoading: true,
+      addShowBol: false,
+      addOrEditTitle: '新增用户',
+      test: ''
     }
   },
   created: function() {
@@ -135,7 +159,11 @@ export default {
       this.table.param.index = 1
       this.fetchData()
     },
-    addUser: function() {
+    addUserBtn: function() {
+      this.addShowBol = true
+    },
+    addUserAction: function() {
+      this.addShowBol = false
     },
     fetchData() {
       this.listLoading = true
