@@ -4,12 +4,18 @@
       <div class="searchPanel">
         <el-form :inline="true" :model="table.param" class="el-form-conts">
           <el-form-item label="账号">
-            <el-input v-model="table.param.USER_ACCOUNT" placeholder="通过账号搜索"/>
+            <el-input v-model="table.param.userAccount" placeholder="通过账号搜索"/>
           </el-form-item>
-          <el-form-item label="性别">
-            <el-select v-model="table.param.USER_SEX" placeholder="性别选择">
-              <el-option label="男" value="0"/>
-              <el-option label="女" value="1"/>
+          <el-form-item label="用户是否锁定">
+            <el-select v-model="table.param.userNonlocked" placeholder="请选择">
+              <el-option label="未锁定" value="0"/>
+              <el-option label="已锁定" value="1"/>
+            </el-select>
+          </el-form-item>
+          <el-form-item label="用户是否过期">
+            <el-select v-model="table.param.userNonlocked" placeholder="请选择">
+              <el-option label="未过期" value="0"/>
+              <el-option label="已过期" value="1"/>
             </el-select>
           </el-form-item>
           <el-button type="primary" icon="el-icon-search" @click="handleSearch">搜索</el-button>
@@ -67,9 +73,9 @@
       </div>
       <div>
         <pagination
-          :total="table.param.allNums"
-          :pager="table.param.pager"
-          :pagesize="table.param.pageSize"
+          :total="table.count"
+          :pager="table.param.index"
+          :pagesize="table.param.size"
           @pagersizechange="pagerSizeChange"
           @pagerchange="pagerChange"/>
       </div>
@@ -90,12 +96,15 @@ export default {
       table: {
         data: [],
         param: {
-          USER_ACCOUNT: '',
-          USER_SEX: '',
-          pager: 1,
-          pageSize: 2,
-          allNums: 0
+          userAccount: '',
+          userNonlocked: '',
+          userNonexpired: '',
+          orgId: '',
+          roleId: '',
+          index: 1,
+          size: 2
         },
+        count: 0,
         selectArry: ''
       }
     }
@@ -114,19 +123,28 @@ export default {
       this.table.selectArry = res
     },
     pagerChange: function(pager) {
-      this.table.param.pager = pager
+      this.table.param.index = pager
       this.fetchData()
     },
     pagerSizeChange: function(size) {
-      this.table.param.pageSize = size
-      this.table.param.pager = 1
+      this.table.param.size = size
+      this.table.param.index = 1
       this.fetchData()
     },
     fetchData() {
       this.listLoading = true
       getUserList(this.table.param).then(response => {
+        response.data.listMapData.forEach((a, b) => {
+          a.USER_SEX = (a.USER_SEX === '0' ? '男' : '女')
+        })
+        response.data.listMapData.forEach((a, b) => {
+          a.USER_NONEXPIRED = (a.USER_NONEXPIRED === '0' ? '未过期' : '已过期')
+        })
+        response.data.listMapData.forEach((a, b) => {
+          a.USER_NONLOCKED = (a.USER_NONLOCKED === '0' ? '未锁定' : '已锁定')
+        })
         this.table.data = response.data.listMapData
-        this.table.param.allNums = response.data.count
+        this.table.count = response.data.count
         this.listLoading = false
       })
     }
