@@ -42,19 +42,37 @@ export const constantRouterMap = [
     component: Layout,
     redirect: '/systemSet/menu',
     name: '系统设置',
-    meta: { title: '系统设置', icon: '系统设置' },
+    meta: { title: '系统设置', icon: 'sysSet' },
     children: [
-      {
-        path: 'menu',
-        name: '菜单管理',
-        component: () => import('@/views/systemSet/menu'),
-        meta: { title: '菜单管理', icon: '菜单管理' }
-      },
       {
         path: 'user',
         name: '用户管理',
         component: () => import('@/views/systemSet/user'),
-        meta: { title: '用户管理', icon: '用户' }
+        meta: { title: '用户管理', icon: 'userSet' }
+      },
+      {
+        path: 'organization',
+        name: '机构管理',
+        component: () => import('@/views/systemSet/organization'),
+        meta: { title: '机构管理', icon: 'tree' }
+      },
+      {
+        path: 'menu',
+        name: '菜单管理',
+        component: () => import('@/views/systemSet/menu'),
+        meta: { title: '菜单管理', icon: 'menuSet' }
+      },
+      {
+        path: 'resource ',
+        name: '资源管理',
+        component: () => import('@/views/systemSet/resource'),
+        meta: { title: '资源管理', icon: 'resourceSet' }
+      },
+      {
+        path: 'role',
+        name: '角色管理',
+        component: () => import('@/views/systemSet/role'),
+        meta: { title: '角色管理', icon: 'roleSet' }
       }
     ]
   },

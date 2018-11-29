@@ -4,7 +4,7 @@ export function login(username, password) {
   return request({
     url: '/j_spring_security_check',
     method: 'post',
-    data: {
+    params: {
       j_username: username,
       j_password: password
     }
@@ -21,7 +21,7 @@ export function getInfo(token) {
 
 export function logout() {
   return request({
-    url: '/user/logout',
-    method: 'post'
+    url: '/logout',
+    method: 'get'
   })
 }

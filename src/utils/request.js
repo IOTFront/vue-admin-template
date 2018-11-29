@@ -1,7 +1,6 @@
 import axios from 'axios'
 import { Message, MessageBox } from 'element-ui'
 import store from '../store'
-import { getToken } from '@/utils/auth'
 
 // 创建axios实例
 const service = axios.create({
@@ -12,9 +11,6 @@ const service = axios.create({
 // request拦截器
 service.interceptors.request.use(
   config => {
-    if (store.getters.token) {
-      config.headers['X-Token'] = getToken() // 让每个请求携带自定义token 请根据实际情况自行修改
-    }
     return config
   },
   error => {
@@ -36,11 +32,10 @@ service.interceptors.response.use(
       Message({
         message: res.message,
         type: 'error',
-        duration: 5 * 1000
+        duration: 3 * 1000
       })
-
-      // 422 过期了;
-      if (res.code === 422 || resState === 422) {
+      // 422 seesion过期了;
+      if (res.code === 405 || resState === 405) {
         MessageBox.confirm(
           '您的用户信息已过期，您可以停留在当前页面或者重新登录',
           '提示',
@@ -48,30 +43,6 @@ service.interceptors.response.use(
             confirmButtonText: '重新登录',
             cancelButtonText: '取消',
             type: 'warning'
-          }
-        ).then(() => {
-          store.dispatch('FedLogOut').then(() => {
-            location.reload() // 为了重新实例化vue-router对象 避免bug
-          })
-        })
-      } else if (res.code === 403 || res.code === 420 || res.code === 421 || res.code === 425 || resState === 403 || resState === 420 || resState === 421 || resState === 425) { // 403 420 421 425过期了;
-        MessageBox.alert(
-          res.message,
-          '提示',
-          {
-            confirmButtonText: '确定'
-          }
-        ).then(() => {
-          store.dispatch('FedLogOut').then(() => {
-            location.reload() // 为了重新实例化vue-router对象 避免bug
-          })
-        })
-      } else {
-        MessageBox.alert(
-          '您的访问有误，请稍后再试！',
-          '提示',
-          {
-            confirmButtonText: '确定'
           }
         ).then(() => {
           store.dispatch('FedLogOut').then(() => {

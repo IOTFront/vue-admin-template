@@ -13,6 +13,7 @@
 </template>
 <script>
 export default {
+  /* eslint-disable */
   props: ['total', 'pagesize', 'pager'],
   data() {
     return {}

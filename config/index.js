@@ -9,7 +9,15 @@ module.exports = {
     // Paths
     assetsSubDirectory: 'static',
     assetsPublicPath: '/',
-    proxyTable: {},
+    proxyTable: {
+      '/JointatTotems':{
+        target:'http://192.168.0.215:8090',
+        changeOrigin:true,
+        pathRewrith:{
+          '^/JointatTotems': '/JointatTotems'
+        }
+      }
+    },
 
     // Various Dev Server settings
     host: 'localhost', // can be overwritten by process.env.HOST

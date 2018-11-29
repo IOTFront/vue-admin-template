@@ -4,7 +4,7 @@
       <div class="searchPanel">
         <el-form :inline="true" :model="table.param" class="el-form-conts">
           <el-form-item label="账号">
-            <el-input v-model="table.param.userName" placeholder="通过账号搜索"/>
+            <el-input v-model="table.param.userAccount" placeholder="通过账号搜索"/>
           </el-form-item>
           <el-form-item label="用户是否锁定">
             <el-select v-model="table.param.userNonlocked" placeholder="请选择">
@@ -22,8 +22,8 @@
         </el-form>
       </div>
       <div class="tableControl">
-        <el-button type="success" @click="addUserBtn">新增</el-button>
-        <el-button type="danger" >批量删除</el-button>
+        <el-button type="success" round @click="addUserBtn">新增</el-button>
+        <el-button type="danger" round>批量删除</el-button>
       </div>
       <div v-loading="tableLoading" class="tableConts">
         <el-table
@@ -107,7 +107,7 @@
 </template>
 
 <script>
-import { getUserList } from '@/api/systemSet/userControl/table'
+import { getUserList } from '@/api/userControl/table'
 import pagination from '@/components/pagination'
 
 export default {
@@ -119,7 +119,7 @@ export default {
       table: {
         data: [],
         param: {
-          userName: '',
+          userAccount: '',
           userNonlocked: '',
           userNonexpired: '',
           orgId: '',
@@ -144,6 +144,7 @@ export default {
       console.log(row)
     },
     handleSearch: function() {
+      this.tableLoading = false
       this.fetchData()
     },
     handleSelectionChange: function(res) {
@@ -165,16 +166,20 @@ export default {
       this.addShowBol = false
     },
     fetchData() {
-      this.tableLoading = true
+      this.listLoading = true
       getUserList(this.table.param).then(response => {
         response.data.listMapData.forEach((a, b) => {
           a.USER_SEX = (a.USER_SEX === '0' ? '男' : '女')
-          a.USER_NONLOCKED = (a.USER_NONLOCKED === '0' ? '未锁定' : '已锁定')
+        })
+        response.data.listMapData.forEach((a, b) => {
           a.USER_NONEXPIRED = (a.USER_NONEXPIRED === '0' ? '未过期' : '已过期')
+        })
+        response.data.listMapData.forEach((a, b) => {
+          a.USER_NONLOCKED = (a.USER_NONLOCKED === '0' ? '未锁定' : '已锁定')
         })
         this.table.data = response.data.listMapData
         this.table.count = response.data.count
-        this.tableLoading = false
+        this.listLoading = false
       })
     }
   }
