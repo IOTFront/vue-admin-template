@@ -5,9 +5,7 @@
       <el-tooltip :content="fullScreen" effect="dark" placement="bottom">
         <screenfull class="screenfull right-menu-item"/>
       </el-tooltip>
-      <el-tooltip :content="ThemePicker" effect="dark" placement="bottom">
-        <theme-picker class="theme-switch right-menu-item"/>
-      </el-tooltip>
+
     </template>
 
     <el-dropdown class="avatar-container" trigger="click">
@@ -32,17 +30,14 @@
 <script>
 import { mapGetters } from 'vuex'
 import Screenfull from '@/components/Screenfull'
-import ThemePicker from '@/components/ThemePicker'
 
 export default {
   components: {
     Screenfull,
-    ThemePicker
   },
   data: () => {
     return {
       fullScreen: '全屏',
-      ThemePicker: '主题选择'
     }
   },
   computed: {

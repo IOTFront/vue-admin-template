@@ -1,17 +1,19 @@
 <template>
   <div class="app-container tableOutConts">
     <el-row>
-      <el-col :span="6">
+      <el-col class="hidden-xs-only" :sm="8" :md="6" :lg="4" :xl="3">
         <LeftTree
           :key="thiTime+'table'"
           :searchtips="leftTree.searchTips"
           :treedate="leftTree.treeDate"
           :childrenstr="leftTree.childrenStr"
           :labelname="leftTree.labelName"
+          :selectkey="leftTree.selectkey"
+          :selectnode="leftTree.selectNode"
           @nodeclcik="treeNodeClick"
         />
       </el-col>
-      <el-col :span="18" :key="thiTime+'table'" style="padding-left: 20px;">
+      <el-col :xs="24" :sm="16" :md="18" :lg="20" :xl="21" :key="thiTime+'table'" style="padding-left: 20px;">
         <div class="tableOutConts">
           <div class="searchPanel">
             <el-form :inline="true" :model="table.param" class="el-form-conts">
@@ -22,7 +24,7 @@
                 <el-input v-model="table.param.menuPath" placeholder="通过链接搜索"/>
               </el-form-item>
               <el-form-item label="类型">
-                <el-select v-model="table.param.userNonlocked" placeholder="请选择类型">
+                <el-select v-model="table.param.menuType" clearable placeholder="请选择类型">
                   <el-option label="菜单" value="0"/>
                   <el-option label="按钮" value="1"/>
                 </el-select>
@@ -96,9 +98,9 @@
       </el-col>
     </el-row>
 
-    <!--新增-->
-    <el-dialog :title="menuControlTitle" :visible.sync="menuControlShow">
-      <el-form ref="menuForm" :model="menuForm" label-position="left" label-width="70px" style="width: 400px; margin-left:50px;">
+    <!--新增/修改弹出层-->
+    <el-dialog :title="menuControlTitle" :visible.sync="menuControlShow" width="600" @close="menuFormClose">
+      <el-form ref="menuForm" :model="menuForm" label-position="left" label-width="70px" style="padding: 0 20px;">
         <el-form-item
           :rules="[ { required: true, message: '请输入菜单名称', trigger: ['blur'] } ]"
           label="菜单名称"
@@ -107,11 +109,25 @@
           <el-input v-model="menuForm.menuName"/>
         </el-form-item>
         <el-form-item
-          :rules="[ { required: true,type:'number', message: '请输入排序数字', trigger: ['blur'] } ]"
+          :rules="[ { required: true, message: '请选择菜单图标', trigger: ['blur'] } ]"
+          label="菜单图标"
+          prop="menuIcon"
+          label-width="85px">
+          <iconSelect :selecticon="menuForm.menuIcon" style="width: 100%;" @iconchange="formIcon"/>
+        </el-form-item>
+        <el-form-item
+          :rules="[ { required: true, message: '请输入菜单链接地址', trigger: ['blur'] } ]"
+          label="链接地址"
+          prop="menuPath"
+          label-width="85px">
+          <el-input v-model="menuForm.menuPath"/>
+        </el-form-item>
+        <el-form-item
+          :rules="[ { required: true,type: 'number', message: '请输入排序数字', trigger: ['blur'] } ]"
           label="菜单排序"
           prop="menuSort"
           label-width="85px">
-          <el-input v-model="menuForm.menuSort" type="number"/>
+          <el-input v-model.number="menuForm.menuSort" type="number"/>
         </el-form-item>
         <el-form-item
           :rules="[ { required: true, message: '请选择菜单类型', trigger: ['blur'] } ]"
@@ -126,23 +142,9 @@
             <el-option label="按钮" value="1"/>
           </el-select>
         </el-form-item>
-        <el-form-item
-          :rules="[ { required: true, message: '请输入菜单链接地址', trigger: ['blur'] } ]"
-          label="链接地址"
-          prop="menuPath"
-          label-width="85px">
-          <el-input v-model="menuForm.menuPath"/>
-        </el-form-item>
-        <el-form-item
-          :rules="[ { required: true, message: '请选择菜单图标', trigger: ['blur'] } ]"
-          :label="menuForm.menuIcon"
-          prop="menuIcon"
-          label-width="85px">
-          <iconSelect :selecticon="menuForm.menuIcon" style="width: 100%;" @iconchange="formIcon"/>
-        </el-form-item>
       </el-form>
       <div slot="footer" class="dialog-footer">
-        <el-button @click="menuControlShow = false;$refs['menuForm'].clearValidate()">取 消</el-button>
+        <el-button @click="menuControlShow = false;">取 消</el-button>
         <el-button type="primary" @click="menuFormAction">确 定</el-button>
       </div>
     </el-dialog>
@@ -155,6 +157,7 @@ import LeftTree from '@/components/leftTree'
 import { getMenuTree, getMenuList, delMenuById, creatMenu, getFwMenuById, updateFwMenu } from '@/api/systemSet/menu'
 import pagination from '@/components/pagination'
 import iconSelect from '@/components/iconSelect'
+import 'element-ui/lib/theme-chalk/display.css';
 
 export default {
   name: 'TreeTableDemo',
@@ -167,12 +170,16 @@ export default {
       * treeDate    ==>树图数据
       * childrenStr ==>子节点数组对象名
       * labelName   ==>显示部分对应数据里的字段
+      * selectkey   ==>树节点唯一标识 传入ID的key
+      * selectNode  ==>树图加载时默认选中的节点
       * */
       leftTree: {
         searchTips: '请输入要搜索的菜单名',
         treeDate: [],
         childrenStr: 'CHILDREN',
-        labelName: 'MENU_NAME'
+        labelName: 'MENU_NAME',
+        selectkey: 'MENU_ID',
+        selectNode: ''
       },
       /* 对应表格接口
       * data            表格数据
@@ -222,7 +229,7 @@ export default {
   },
   created() {
     /* 初始化加载树图*/
-    this.reFlashLeftData()
+    this.reFlashLeftData('')
   },
   methods: {
     /*  右侧表格事件
@@ -249,6 +256,10 @@ export default {
       this.table.param.index = 1
       this.fetchData()
     },
+    menuFormClose() {
+      this.$refs['menuForm'].clearValidate()
+      this.menuForm.menuIcon = ''
+    },
     addMenuBtn() {
       this.menuCtlData.menuParentId = this.table.param.menutId ? this.table.param.menutId : '0'
       this.menuForm = this.menuCtlData
@@ -257,7 +268,6 @@ export default {
       this.menuControlShow = true
     },
     editMenu: function(row) {
-      this.$refs['menuForm'].clearValidate()
       getFwMenuById({ menuId: row.MENU_ID }).then(res => {
         this.menuForm = res.data
         this.menuControlTitle = '编辑菜单'
@@ -272,13 +282,14 @@ export default {
             message: '恭喜你，删除菜单' + row.MENU_NAME + '成功！',
             type: 'success'
           })
-          this.reFlashLeftData()
+          this.reFlashLeftData(this.table.param.menutId)
         } else {
           this.$message.error(response.message)
         }
       })
     },
     formIcon: function(icon) {
+      console.log(icon)
       this.menuForm.menuIcon = icon
       console.log(this.menuForm)
     },
@@ -292,7 +303,7 @@ export default {
                   message: '恭喜你，添加菜单' + this.menuForm.menuName + '成功！',
                   type: 'success'
                 })
-                this.reFlashLeftData()
+                this.reFlashLeftData(this.table.param.menutId)
               } else {
                 this.$message.error(res.message)
               }
@@ -306,7 +317,7 @@ export default {
                   message: '恭喜你，修改菜单' + this.menuForm.menuName + '成功！',
                   type: 'success'
                 })
-                this.reFlashLeftData()
+                this.reFlashLeftData(this.table.param.menutId)
               } else {
                 this.$message.error(res.message)
               }
@@ -340,6 +351,8 @@ export default {
       this.fetchData()
     },
     reFlashLeftData(id) {
+      this.table.param.menutId = id
+      this.leftTree.selectNode = this.table.param.menutId
       getMenuTree().then(response => {
         this.leftTree.treeDate = [{
           'MENU_ID': '',
@@ -347,11 +360,11 @@ export default {
           'MENU_NAME': '全部',
           'CHILDREN': response.data
         }]
-        if (id === undefined) {
-          this.treeNodeClick()
-        }
+        this.treeNodeClick(id)
       })
     }
   }
 }
 </script>
+
+
