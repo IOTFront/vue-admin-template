@@ -63,7 +63,7 @@ export const constantRouterMap = [
         meta: { title: '菜单管理', icon: 'menuSet' }
       },
       {
-        path: 'resource ',
+        path: 'resource',
         name: '资源管理',
         component: () => import('@/views/systemSet/resource'),
         meta: { title: '资源管理', icon: 'resourceSet' }

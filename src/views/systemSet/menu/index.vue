@@ -43,9 +43,6 @@
               style="width: 100%"
               @selection-change="handleSelectionChange">
               <el-table-column
-                type="selection"
-                width="55"/>
-              <el-table-column
                 fixed
                 prop="MENU_NAME"
                 label="菜单名称"
@@ -231,7 +228,7 @@ export default {
   },
   created() {
     /* 初始化加载树图*/
-    this.reFlashLeftData('')
+    this.reFlashLeftData('0')
   },
   methods: {
     /*  右侧表格事件
@@ -264,7 +261,7 @@ export default {
     },
     addMenuBtn() {
       this.menuCtlData = {
-        menuParentId: this.table.param.menutId ? this.table.param.menutId : '0',
+        menuParentId: this.table.param.menutId,
         menuName: '',
         menuSort: '',
         menuType: '',
@@ -285,15 +282,21 @@ export default {
       })
     },
     deletMenu(row) {
-      delMenuById({ menuId: row.MENU_ID }).then(response => {
-        if (response.data) {
-          this.$message({
-            message: '恭喜你，删除菜单' + row.MENU_NAME + '成功！',
-            type: 'success'
+      this.$alert('删除菜单同时会删除下级的菜单，是否删除菜单' + row.MENU_NAME + '?', '删除提示', {
+        confirmButtonText: '确定',
+        type: 'warning',
+        callback: action => {
+          delMenuById({ menuId: row.MENU_ID }).then(response => {
+            if (response.data) {
+              this.$message({
+                message: '恭喜你，删除菜单' + row.MENU_NAME + '成功！',
+                type: 'success'
+              })
+              this.reFlashLeftData(this.table.param.menutId)
+            } else {
+              this.$message.error(response.message)
+            }
           })
-          this.reFlashLeftData(this.table.param.menutId)
-        } else {
-          this.$message.error(response.message)
         }
       })
     },
@@ -362,7 +365,7 @@ export default {
       this.leftTree.selectNode = this.table.param.menutId
       getMenuTree().then(response => {
         this.leftTree.treeDate = [{
-          'MENU_ID': '',
+          'MENU_ID': '0',
           'MENU_PARENT_ID': '',
           'MENU_NAME': '全部',
           'CHILDREN': response.data

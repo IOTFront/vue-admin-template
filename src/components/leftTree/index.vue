@@ -1,5 +1,5 @@
 <template>
-  <el-row>
+  <el-row :key="Date.parse(new Date())">
     <el-input
       :placeholder="searchtips"
       v-model="filterText"/>
@@ -56,7 +56,7 @@ export default {
       return data[this['labelname']].indexOf(value) !== -1
     },
     nodek(obj, node, tree) {
-      this.$emit('nodeclcik', obj.MENU_ID)
+      this.$emit('nodeclcik', obj[this.selectkey])
     }
   }
 

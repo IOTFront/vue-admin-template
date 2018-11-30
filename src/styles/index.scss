@@ -108,7 +108,10 @@ a:hover {
   margin: 10px 0;
   .el-tree-node__content{
     padding: 5px;
-    font-size: 16px;
+    font-size: 14px;
     height: 40px;
   }
+}
+.nowarp *{
+  word-break: keep-all!important;
 }
