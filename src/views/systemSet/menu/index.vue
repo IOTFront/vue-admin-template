@@ -282,22 +282,22 @@ export default {
       })
     },
     deletMenu(row) {
-      this.$alert('删除菜单同时会删除下级的菜单，是否删除菜单' + row.MENU_NAME + '?', '删除提示', {
+      this.$confirm('删除菜单同时会删除下级的菜单，是否删除菜单' + row.MENU_NAME + '?', '删除提示', {
         confirmButtonText: '确定',
-        type: 'warning',
-        callback: action => {
-          delMenuById({ menuId: row.MENU_ID }).then(response => {
-            if (response.data) {
-              this.$message({
-                message: '恭喜你，删除菜单' + row.MENU_NAME + '成功！',
-                type: 'success'
-              })
-              this.reFlashLeftData(this.table.param.menutId)
-            } else {
-              this.$message.error(response.message)
-            }
-          })
-        }
+        cancelButtonText: '取消',
+        type: 'warning'
+      }).then(() => {
+        delMenuById({ menuId: row.MENU_ID }).then(response => {
+          if (response.data) {
+            this.$message({
+              message: '恭喜你，删除菜单' + row.MENU_NAME + '成功！',
+              type: 'success'
+            })
+            this.reFlashLeftData(this.table.param.menutId)
+          } else {
+            this.$message.error(response.message)
+          }
+        })
       })
     },
     formIcon: function(icon) {

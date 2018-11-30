@@ -55,7 +55,6 @@
                 prop="RESOURCE_TYPE_NAME"
                 label="资源类型"/>
               <el-table-column
-                :resizable="true"
                 prop="RESOURCE_PATH"
                 label="资源链接"
                 width="240"
@@ -64,7 +63,6 @@
                 prop="RESOURCE_SORT"
                 label="资源排序" />
               <el-table-column
-                :resizable="true"
                 prop="RESOURCE_DESC"
                 label="资源描述"
                 width="100"
@@ -101,7 +99,7 @@
 
     <!--新增/修改弹出层-->
     <el-dialog :title="menuControlTitle" :visible.sync="menuControlShow" width="600" @close="menuFormClose">
-      <el-form ref="menuForm" :model="menuForm" label-position="left" label-width="70px" style="padding: 0 20px;">
+      <el-form ref="menuForm" :model="menuForm" :rules="rules" label-position="left" label-width="70px" style="padding: 0 20px;">
         <el-form-item
           :rules="[ { required: true, message: '请输入资源名称', trigger: ['blur'] } ]"
           label="资源名称"
@@ -110,14 +108,13 @@
           <el-input v-model="menuForm.resourceName"/>
         </el-form-item>
         <el-form-item
-          :rules="[ { required: true, message: '请输入资源链接地址', trigger: ['blur'] } ]"
           label="资源链接"
           prop="resourcePath"
           label-width="85px">
           <el-input v-model="menuForm.resourcePath"/>
         </el-form-item>
         <el-form-item
-          :rules="[ { required: true, message: '请选择resourceType', trigger: ['blur'] } ]"
+          :rules="[ { required: true, message: '请选择资源类型', trigger: ['blur'] } ]"
           label="资源类型"
           prop="resourceType"
           label-width="85px">
@@ -167,10 +164,25 @@ export default {
   name: 'TreeTableDemo',
   components: { LeftTree, pagination, iconSelect },
   data() {
+    var validateResUrl = (rule, value, callback) => {
+      if (value === '') {
+        callback(new Error('请输入资源名称'))
+      } else if (value !== this.menuForm.resourceBasePath) {
+        isFwResOnly({ resourcePath: value }).then(res => {
+          if (res.data) {
+            callback()
+          } else {
+            callback(new Error('资源链接已存在，请重新输入!'))
+          }
+        })
+      } else {
+        callback()
+      }
+    }
     return {
       thiTime: Date.parse(new Date()),
       /* 对应左边树图的参数
-        * searchTips  ===>搜索栏提示语
+        * searchTips  ==>搜索栏提示语
         * treeDate    ==>树图数据
         * childrenStr ==>子节点数组对象名
         * labelName   ==>显示部分对应数据里的字段
@@ -239,7 +251,13 @@ export default {
       menuControlShow: false,
       tableLoading: true,
       formType: 1,
-      menuForm: {}
+      menuForm: {},
+      rules: {
+        resourcePath: [
+          { validator: validateResUrl, trigger: 'blur' },
+          { required: true, message: '请输入资源链接', trigger: ['blur'] }
+        ]
+      }
     }
   },
   created() {
@@ -283,7 +301,6 @@ export default {
     },
     menuFormClose() {
       this.$refs['menuForm'].clearValidate()
-      this.menuForm.menuIcon = ''
     },
     addMenuBtn() {
       this.menuCtlData = {
@@ -292,7 +309,8 @@ export default {
         resourceName: '',
         resourceType: '',
         resourceSort: '',
-        resourceDesc: ''
+        resourceDesc: '',
+        resourceBasePath: ''
       }
       this.menuForm = this.menuCtlData
       this.menuControlTitle = '新增资源'
@@ -302,28 +320,29 @@ export default {
     editMenu: function(row) {
       getFwResById({ resourceId: row.RESOURCE_ID }).then(res => {
         this.menuForm = res.data
+        this.menuForm.resourceBasePath = this.menuForm.resourcePath
         this.menuControlTitle = '编辑资源'
         this.formType = 2
         this.menuControlShow = true
       })
     },
     deletMenu(row) {
-      this.$alert('删除资源会删除下级所以资源及资源与角色的关系，是否删除资源' + row.RESOURCE_NAME + '?', '删除提示', {
+      this.$confirm('删除资源会删除下级所以资源及资源与角色的关系，是否删除资源' + row.RESOURCE_NAME + '?', '删除提示', {
         confirmButtonText: '确定',
-        type: 'warning',
-        callback: action => {
-          deleteFwResById({ resourceId: row.RESOURCE_ID }).then(response => {
-            if (response.data) {
-              this.$message({
-                message: '恭喜你，删除资源' + row.RESOURCE_NAME + '成功！',
-                type: 'success'
-              })
-              this.reFlashLeftData(this.table.param.resourceId)
-            } else {
-              this.$message.error(response.message)
-            }
-          })
-        }
+        cancelButtonText: '取消',
+        type: 'warning'
+      }).then(() => {
+        deleteFwResById({ resourceId: row.RESOURCE_ID }).then(response => {
+          if (response.data) {
+            this.$message({
+              message: '恭喜你，删除资源' + row.RESOURCE_NAME + '成功！',
+              type: 'success'
+            })
+            this.reFlashLeftData(this.table.param.resourceId)
+          } else {
+            this.$message.error(response.message)
+          }
+        })
       })
     },
     menuFormAction() {
@@ -336,7 +355,7 @@ export default {
                   message: '恭喜你，添加资源' + this.menuForm.resourceName + '成功！',
                   type: 'success'
                 })
-                this.reFlashLeftData(this.table.param.menutId)
+                this.reFlashLeftData(this.table.param.resourceId)
               } else {
                 this.$message.error(res.message)
               }
@@ -350,7 +369,7 @@ export default {
                   message: '恭喜你，修改资源' + this.menuForm.resourceName + '成功！',
                   type: 'success'
                 })
-                this.reFlashLeftData(this.table.param.menutId)
+                this.reFlashLeftData(this.table.param.resourceId)
               } else {
                 this.$message.error(res.message)
               }
@@ -379,13 +398,12 @@ export default {
       *   reFlashLeftData   重新加载树图
       * */
     treeNodeClick(id) {
-      console.log(id)
       this.table.param.resourceId = id
       this.fetchData()
     },
     reFlashLeftData(id) {
-      this.table.param.menutId = id
-      this.leftTree.selectNode = this.table.param.menutId
+      this.table.param.resourceId = id
+      this.leftTree.selectNode = this.table.param.resourceId
       getFwResList().then(response => {
         this.leftTree.treeDate = [{
           'RESOURCE_ID': '0',

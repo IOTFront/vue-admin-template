@@ -104,14 +104,10 @@ a:hover {
 }
 
 /*左树右表  左树相关设置*/
-.leftTree{
-  margin: 10px 0;
-  .el-tree-node__content{
-    padding: 5px;
-    font-size: 14px;
-    height: 40px;
-  }
+.leftTree .el-tree-node__content{
+  height: 40px;
 }
+
 .nowarp *{
   word-break: keep-all!important;
 }

@@ -3,26 +3,32 @@
     <el-input
       :placeholder="searchtips"
       v-model="filterText"/>
-    <el-tree
-      ref="leftTree"
-      :data="treedate"
-      :props="defaultProps"
-      :expand-on-click-node="false"
-      :filter-node-method="filterNode"
-      :highlight-current="selectH"
-      :node-key="selectkey"
-      class="filter-tree leftTree"
-      default-expand-all
-      @node-click="nodek">
-      <div slot-scope="{ node, data }" class="left-tree-node">
-        <span v-if="lefticon" class="treeIcon">
-          <svg-icon :icon-class="lefticon"/>
-        </span>
-        <span>
-          {{ node.label }}
-        </span>
-      </div>
-    </el-tree>
+    <div class="leftTreeCont">
+      <el-scrollbar wrap-class="scrollbar-wrapper">
+        <el-tree
+          ref="leftTree"
+          :data="treedate"
+          :props="defaultProps"
+          :expand-on-click-node="false"
+          :filter-node-method="filterNode"
+          :highlight-current="selectH"
+          :node-key="selectkey"
+          class="filter-tree leftTree"
+          default-expand-all
+          @node-click="nodek">
+          <div slot-scope="{ node, data }" class="left-tree-node">
+            <span v-if="lefticon" class="treeIcon">
+              <svg-icon :icon-class="lefticon"/>
+            </span>
+            <span>
+              {{ node.label }}
+            </span>
+          </div>
+        </el-tree>
+
+      </el-scrollbar>
+    </div>
+
   </el-row>
 </template>
 <script>
@@ -64,9 +70,14 @@ export default {
 
 </script>
 <style >
-.left-tree-node .treeIcon{
+.left-tree-node{
+  font-size: 14px;
+  .treeIcon{
     margin: 0 5px;
-    font-size: 14px;
   }
-
+}
+.leftTreeCont{
+  height: calc(100vh - 191px);
+  padding: 10px 0 0;
+}
 </style>
