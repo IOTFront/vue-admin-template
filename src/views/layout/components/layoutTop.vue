@@ -33,11 +33,11 @@ import Screenfull from '@/components/Screenfull'
 
 export default {
   components: {
-    Screenfull,
+    Screenfull
   },
   data: () => {
     return {
-      fullScreen: '全屏',
+      fullScreen: '全屏'
     }
   },
   computed: {

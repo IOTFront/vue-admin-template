@@ -14,6 +14,7 @@
 import icons from './requireIcons'
 
 export default {
+// eslint-disable-next-line vue/require-prop-types
   props: ['selecticon', 'selectkey', 'selectnode'],
   data() {
     return {

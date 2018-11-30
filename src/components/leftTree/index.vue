@@ -13,13 +13,23 @@
       :node-key="selectkey"
       class="filter-tree leftTree"
       default-expand-all
-      @node-click="nodek"/>
+      @node-click="nodek">
+      <div slot-scope="{ node, data }" class="left-tree-node">
+        <span v-if="lefticon" class="treeIcon">
+          <svg-icon :icon-class="lefticon"/>
+        </span>
+        <span>
+          {{ node.label }}
+        </span>
+      </div>
+    </el-tree>
   </el-row>
 </template>
 <script>
+
 export default {
-  name: 'LeftTree',
-  props: ['searchtips', 'treedate', 'childrenstr', 'labelname', 'selectkey', 'selectnode'],
+  name: 'LeftTree', // eslint-disable-next-line vue/require-prop-types
+  props: ['searchtips', 'treedate', 'childrenstr', 'labelname', 'selectkey', 'selectnode', 'lefticon'],
   data() {
     return {
       filterText: '',
@@ -32,9 +42,9 @@ export default {
   },
   watch: {
     filterText(val) {
-      this.$refs.tree2.filter(val)
+      this.$refs.leftTree.filter(val)
     },
-    treedate:function() {
+    treedate: function() {
       this.$nextTick(() => {
         this.$refs.leftTree.setCurrentKey(this.selectnode) // treeBox 元素的ref   value 绑定的node-key
       })
@@ -54,5 +64,9 @@ export default {
 
 </script>
 <style >
+.left-tree-node .treeIcon{
+    margin: 0 5px;
+    font-size: 14px;
+  }
 
 </style>

@@ -1,7 +1,7 @@
 <template>
   <div class="app-container tableOutConts">
     <el-row>
-      <el-col class="hidden-xs-only" :sm="8" :md="6" :lg="4" :xl="3">
+      <el-col :sm="8" :md="6" :lg="4" :xl="3" class="hidden-xs-only">
         <LeftTree
           :key="thiTime+'table'"
           :searchtips="leftTree.searchTips"
@@ -10,6 +10,7 @@
           :labelname="leftTree.labelName"
           :selectkey="leftTree.selectkey"
           :selectnode="leftTree.selectNode"
+          :lefticon="leftTree.lefticon"
           @nodeclcik="treeNodeClick"
         />
       </el-col>
@@ -34,7 +35,6 @@
           </div>
           <div class="tableControl">
             <el-button type="success" @click="addMenuBtn">新增</el-button>
-            <el-button type="danger" >批量删除</el-button>
           </div>
           <div v-loading="tableLoading" class="tableConts">
             <el-table
@@ -157,7 +157,7 @@ import LeftTree from '@/components/leftTree'
 import { getMenuTree, getMenuList, delMenuById, creatMenu, getFwMenuById, updateFwMenu } from '@/api/systemSet/menu'
 import pagination from '@/components/pagination'
 import iconSelect from '@/components/iconSelect'
-import 'element-ui/lib/theme-chalk/display.css';
+import 'element-ui/lib/theme-chalk/display.css'
 
 export default {
   name: 'TreeTableDemo',
@@ -172,6 +172,7 @@ export default {
       * labelName   ==>显示部分对应数据里的字段
       * selectkey   ==>树节点唯一标识 传入ID的key
       * selectNode  ==>树图加载时默认选中的节点
+      * lefticon    ==>树图图标    不加图标直接设为空
       * */
       leftTree: {
         searchTips: '请输入要搜索的菜单名',
@@ -179,7 +180,8 @@ export default {
         childrenStr: 'CHILDREN',
         labelName: 'MENU_NAME',
         selectkey: 'MENU_ID',
-        selectNode: ''
+        selectNode: '',
+        lefticon: 'menuIcon'
       },
       /* 对应表格接口
       * data            表格数据
@@ -261,7 +263,14 @@ export default {
       this.menuForm.menuIcon = ''
     },
     addMenuBtn() {
-      this.menuCtlData.menuParentId = this.table.param.menutId ? this.table.param.menutId : '0'
+      this.menuCtlData = {
+        menuParentId: this.table.param.menutId ? this.table.param.menutId : '0',
+        menuName: '',
+        menuSort: '',
+        menuType: '',
+        menuPath: '',
+        menuIcon: ''
+      }
       this.menuForm = this.menuCtlData
       this.menuControlTitle = '新增菜单'
       this.formType = 1
@@ -289,9 +298,7 @@ export default {
       })
     },
     formIcon: function(icon) {
-      console.log(icon)
       this.menuForm.menuIcon = icon
-      console.log(this.menuForm)
     },
     menuFormAction() {
       this.$refs['menuForm'].validate((valid) => {
@@ -366,5 +373,4 @@ export default {
   }
 }
 </script>
-
 

@@ -80,7 +80,7 @@ a:hover {
 }
 
 .app-container {
-  padding: 20px;
+  padding: 20px 20px 20px 0;
 }
 //表格相关设置
 .tableOutConts{
@@ -109,6 +109,6 @@ a:hover {
   .el-tree-node__content{
     padding: 5px;
     font-size: 16px;
-    height: 32px;
+    height: 40px;
   }
 }
