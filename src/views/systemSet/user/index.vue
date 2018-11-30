@@ -13,7 +13,7 @@
             </el-select>
           </el-form-item>
           <el-form-item label="用户是否过期">
-            <el-select v-model="table.param.userNonlocked" placeholder="请选择">
+            <el-select v-model="table.param.userNonexpired" placeholder="请选择">
               <el-option label="未过期" value="0"/>
               <el-option label="已过期" value="1"/>
             </el-select>
@@ -27,6 +27,7 @@
       </div>
       <div v-loading="tableLoading" class="tableConts">
         <el-table
+          v-loading="tableLoading"
           :data="table.data"
           border
           style="width: 100%"
@@ -65,9 +66,8 @@
             label="操作"
             width="160">
             <template slot-scope="scope">
-              <el-button type="text" size="small" @click="handleClick(scope.row)">查看</el-button>
-              <el-button type="text" size="small">编辑</el-button>
-              <el-button type="text" size="small">删除</el-button>
+              <el-button type="text" size="small" @click="editMenu(scope.row)">编辑</el-button>
+              <el-button type="text" size="small" @click="deletMenu(scope.row)">删除</el-button>
             </template>
           </el-table-column>
         </el-table>
@@ -82,62 +82,80 @@
       </div>
     </div>
     <!--新增/修改弹出层-->
-    <el-dialog :title="menuControlTitle" :visible.sync="menuControlShow" width="600px" @close="resFormClose">
-      <el-form ref="resForm" :model="resForm" :rules="rules" label-position="left" label-width="70px" style="padding: 0 20px;">
+    <el-dialog :title="menuControlTitle" :visible.sync="menuControlShow" width="600px" @close="userFormClose">
+      <el-form ref="userForm" :model="userForm" :rules="rules" label-position="left" label-width="70px" style="padding: 0 20px;">
         <el-form-item
-          :rules="[ { required: true, message: '请输入资源名称', trigger: ['blur'] } ]"
-          label="资源名称"
-          prop="resourceName"
+          label="用户账号"
+          prop="userAccount"
           label-width="85px">
-          <el-input v-model="resForm.resourceName"/>
+          <el-input v-model="userForm.userAccount"/>
         </el-form-item>
         <el-form-item
-          label="资源链接"
-          prop="resourcePath"
+          :rules="[ { required: true, message: '用户名称', trigger: ['blur'] } ]"
+          label="用户名称"
+          prop="userName"
           label-width="85px">
-          <el-input v-model="resForm.resourcePath"/>
+          <el-input v-model="userForm.userName"/>
         </el-form-item>
         <el-form-item
-          :rules="[ { required: true, message: '请选择资源类型', trigger: ['blur'] } ]"
-          label="资源类型"
-          prop="resourceType"
+          :rules="[ { required: true, message: '用户性别', trigger: ['blur'] } ]"
+          label="用户性别"
+          prop="userSex"
           label-width="85px">
           <el-select
-            v-model="resForm.resourceType"
+            v-model="userForm.userSex"
             style="width: 100%;"
             placeholder="请选择类型">
-            <el-option label="数据请求" value="GET"/>
-            <el-option label="表单提交" value="POST"/>
-            <el-option label="数据修改" value="PUT"/>
-            <el-option label="数据删除" value="DELETE"/>
-            <el-option label="上传" value="UPLOAD"/>
-            <el-option label="下载" value="DOWNLOAD"/>
+            <el-option label="男" value="0"/>
+            <el-option label="女" value="1"/>
           </el-select>
-        </el-form-item>        <el-form-item
-          :rules="[ { required: true,type: 'number', message: '请输入排序数字', trigger: ['blur'] } ]"
-          label="资源排序"
-          prop="resourceSort"
-          label-width="85px">
-          <el-input v-model.number="resForm.resourceSort" type="number"/>
         </el-form-item>
         <el-form-item
-          :rules="[ { required: true, message: '请输入资源描述', trigger: ['blur'] } ]"
-          label="资源描述"
-          prop="resourceDesc"
+          label="手机号码"
+          prop="userMobile"
           label-width="85px">
-          <el-input v-model="resForm.resourceDesc" type="textarea" />
+          <el-input v-model="userForm.userMobile"/>
+        </el-form-item>
+        <el-form-item
+          :rules="[ { required: true, message: '请选择机构', trigger: ['blur'] } ]"
+          label="所属机构"
+          prop="orgId"
+          label-width="85px">
+          <el-cascader
+            :options="options"
+            :props="orgprops"
+            :show-all-levels="false"
+            :value="userForm.orgId"
+            v-model="userForm.orgId"
+            expand-trigger="hover"/>
+        </el-form-item>
+        <el-form-item
+          v-if="formType===1"
+          :rules="[ { required: true, message: '请输入密码', trigger: ['blur'] } ]"
+          label="用户密码"
+          prop="userPassword"
+          label-width="85px">
+          <el-input v-model="userForm.userPassword"/>
+        </el-form-item>
+        <el-form-item
+          :rules="[ { required: true, message: '请输入头像', trigger: ['blur'] } ]"
+          label="用户头像"
+          prop="userPhoto"
+          label-width="85px">
+          <el-input v-model="userForm.userPhoto" type="textarea" />
         </el-form-item>
       </el-form>
       <div slot="footer" class="dialog-footer">
         <el-button @click="menuControlShow = false;">取 消</el-button>
-        <el-button type="primary" @click="resFormAction">确 定</el-button>
+        <el-button type="primary" @click="userFormAction">确 定</el-button>
       </div>
     </el-dialog>
   </div>
 </template>
 
 <script>
-import { getUserList } from '@/api/systemSet/userControl/table'
+import { getUserList, addFwUser, updateFwUser, deleteFwUserById, getFwUser, isFwUserOnly } from '@/api/systemSet/userControl/table'
+import { getFwOrgList } from '@/api/systemSet/organization'
 import pagination from '@/components/pagination'
 
 export default {
@@ -145,7 +163,61 @@ export default {
     pagination
   },
   data: function() {
+    var validateuserCount = (rule, value, callback) => {
+      if (value === '') {
+        callback(new Error('请输入用户账号'))
+      } else if (value !== this.userForm.userAccountBase) {
+        isFwUserOnly({ userAccount: value }).then(res => {
+          if (res.data) {
+            callback()
+          } else {
+            callback(new Error('用户账号已存在，请重新输入!'))
+          }
+        })
+      } else {
+        callback()
+      }
+    }
+    var checkPhone = (rule, value, callback) => {
+      if (!value) {
+        return callback(new Error('手机号不能为空'))
+      } else {
+        const reg = /^1[3|4|5|7|8][0-9]\d{8}$/
+        console.log(reg.test(value))
+        if (reg.test(value)) {
+          callback()
+        } else {
+          return callback(new Error('请输入正确的手机号'))
+        }
+      }
+    }
     return {
+      /* 机构级联选择器*/
+      options: {
+
+      },
+      orgprops: {
+        value: 'ORG_ID',
+        label: 'ORG_NAME',
+        children: 'CHILDREN'
+      },
+      rules: {
+        userAccount: [
+          { validator: validateuserCount, trigger: 'blur' },
+          { required: true, message: '请输入用户账号', trigger: ['blur'] }
+        ],
+        userMobile: [
+          { validator: checkPhone, trigger: 'blur' },
+          { required: true, message: '请输入手机号码', trigger: ['blur'] }
+        ]
+      },
+      /* 对应表格接口
+        * data            表格数据
+        * param           表格的请求参数
+        * count           总条目数
+        * selectArry      表格选中的数据
+        * tableLoading    表格的加载图 是否显示
+        * */
       table: {
         data: [],
         param: {
@@ -160,14 +232,39 @@ export default {
         count: 0,
         selectArry: ''
       },
+      /* 表格新增/修改相关
+        * orgId	[string]	是	机构ID
+        * userAccount	[string]	是	账号
+        * userPassword	[string]	是	密码
+        * userName	[string]	是	昵称
+        * userSex	[string]	是	性别【0-男、1-女】
+        * userMobile	[string]	是	手机
+        * userPhoto 复制	[string]	是	照片（Base64）
+        *
+        * menuControlShow   模态框显示、隐藏
+        * formType          模态框对应事件   1新增 2修改
+        * */
+      menuCtlData: {
+        orgId: '',
+        userAccount: '',
+        userPassword: '',
+        userName: '',
+        userSex: '',
+        userPhoto: '',
+        userMobile: ''
+      },
+      menuControlTitle: '',
+      menuControlShow: false,
       tableLoading: true,
-      addShowBol: false,
-      addOrEditTitle: '新增用户',
-      test: ''
+      formType: 1,
+      userForm: {}
     }
   },
   created: function() {
     this.fetchData()
+    getFwOrgList().then(res => {
+      this.options = res.data
+    })
   },
   methods: {
     handleClick(row) {
@@ -188,11 +285,90 @@ export default {
       this.table.param.index = 1
       this.fetchData()
     },
-    addUserBtn: function() {
-      this.addShowBol = true
+    userFormClose() {
+      this.$refs['userForm'].clearValidate()
     },
-    addUserAction: function() {
-      this.addShowBol = false
+    addUserBtn() {
+      this.menuCtlData = {
+        orgId: '',
+        userAccount: '',
+        userPassword: '',
+        userName: '',
+        userSex: '',
+        userPhoto: '',
+        userMobile: '',
+        userAccountBase: ''
+      }
+      this.userForm = this.menuCtlData
+      this.menuControlTitle = '新增用户'
+      this.formType = 1
+      this.menuControlShow = true
+    },
+    editMenu: function(row) {
+      getFwUser({ userId: row.USER_ID }).then(res => {
+        res.userAccountBase = res.userAccount
+        this.userForm = res.data
+        this.menuControlTitle = '编辑用户'
+        this.formType = 2
+        this.menuControlShow = true
+      })
+    },
+    deletMenu(row) {
+      this.$confirm('删除用户会删除用户的关联信息，是否删除用户 ' + row.USER_NAME + ' ?', '删除提示', {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        type: 'warning'
+      }).then(() => {
+        deleteFwUserById({ userId: row.USER_ID }).then(response => {
+          if (response.data) {
+            this.$message({
+              message: '恭喜你，删除用户' + row.USER_NAME + '成功！',
+              type: 'success'
+            })
+            this.fetchData()
+          } else {
+            this.$message.error(response.message)
+          }
+        }).catch(() => {
+        })
+      })
+    },
+    userFormAction() {
+      this.$refs['userForm'].validate((valid) => {
+        if (valid) {
+          if (this.formType === 1) {
+            addFwUser(this.userForm).then(res => {
+              if (res.data) {
+                this.$message({
+                  message: '恭喜你，添加用户' + this.userForm.resourceName + '成功！',
+                  type: 'success'
+                })
+                this.fetchData()
+              } else {
+                this.$message.error(res.message)
+              }
+              this.menuControlShow = false
+              this.$refs['userForm'].clearValidate()
+            })
+          } else {
+            updateFwUser(this.userForm).then(res => {
+              if (res.data) {
+                this.$message({
+                  message: '恭喜你，修改用户' + this.userForm.resourceName + '成功！',
+                  type: 'success'
+                })
+                this.fetchData()
+              } else {
+                this.$message.error(res.message)
+              }
+              this.menuControlShow = false
+              this.$refs['userForm'].clearValidate()
+            })
+          }
+        } else {
+          this.$message.error('请按照提示信息修改错误的内容')
+        }
+      })
     },
     fetchData() {
       this.tableLoading = true
