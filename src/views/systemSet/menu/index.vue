@@ -96,7 +96,7 @@
     </el-row>
 
     <!--新增/修改弹出层-->
-    <el-dialog :title="menuControlTitle" :visible.sync="menuControlShow" width="600" @close="menuFormClose">
+    <el-dialog :title="menuControlTitle" :visible.sync="menuControlShow" width="600px" @close="menuFormClose">
       <el-form ref="menuForm" :model="menuForm" label-position="left" label-width="70px" style="padding: 0 20px;">
         <el-form-item
           :rules="[ { required: true, message: '请输入菜单名称', trigger: ['blur'] } ]"
@@ -282,7 +282,7 @@ export default {
       })
     },
     deletMenu(row) {
-      this.$confirm('删除菜单同时会删除下级的菜单，是否删除菜单' + row.MENU_NAME + '?', '删除提示', {
+      this.$confirm('删除菜单同时会删除下级的菜单，是否删除菜单 ' + row.MENU_NAME + ' ?', '删除提示', {
         confirmButtonText: '确定',
         cancelButtonText: '取消',
         type: 'warning'

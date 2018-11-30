@@ -70,13 +70,13 @@ export default {
 
 </script>
 <style >
-.left-tree-node{
+.left-tree-node {
   font-size: 14px;
-  .treeIcon{
+  .treeIcon {
     margin: 0 5px;
   }
 }
-.leftTreeCont{
+.leftTreeCont {
   height: calc(100vh - 191px);
   padding: 10px 0 0;
 }

@@ -36,11 +36,11 @@ export function addFwOrg(params) {
   })
 }
 
-/* 根据ID查询机构信息*/
+/* 根据ID查询机构列表*/
 export function getFwOrgListById(params) {
   return request({
-    url: '/fwMenu/getFwOrgListById',
-    method: 'get',
+    url: '/fwOrg/findFwOrgList',
+    method: 'post',
     params
   })
 }

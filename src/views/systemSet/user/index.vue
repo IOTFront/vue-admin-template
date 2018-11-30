@@ -81,26 +81,56 @@
         </div>
       </div>
     </div>
-    <!--添加对话框-->
-    <el-dialog :title="addOrEditTitle" :visible.sync="addShowBol">
-      <el-form ref="dataForm" label-position="left" label-width="70px" style="width: 400px; margin-left:50px;">
-        <el-form-item label="账号" prop="title">
-          <el-input v-model="test"/>
+    <!--新增/修改弹出层-->
+    <el-dialog :title="menuControlTitle" :visible.sync="menuControlShow" width="600px" @close="resFormClose">
+      <el-form ref="resForm" :model="resForm" :rules="rules" label-position="left" label-width="70px" style="padding: 0 20px;">
+        <el-form-item
+          :rules="[ { required: true, message: '请输入资源名称', trigger: ['blur'] } ]"
+          label="资源名称"
+          prop="resourceName"
+          label-width="85px">
+          <el-input v-model="resForm.resourceName"/>
         </el-form-item>
-        <el-form-item label="用户名" prop="title">
-          <el-input v-model="test"/>
+        <el-form-item
+          label="资源链接"
+          prop="resourcePath"
+          label-width="85px">
+          <el-input v-model="resForm.resourcePath"/>
         </el-form-item>
-        <el-form-item label="用户密码" prop="title">
-          <el-input v-model="test"/>
+        <el-form-item
+          :rules="[ { required: true, message: '请选择资源类型', trigger: ['blur'] } ]"
+          label="资源类型"
+          prop="resourceType"
+          label-width="85px">
+          <el-select
+            v-model="resForm.resourceType"
+            style="width: 100%;"
+            placeholder="请选择类型">
+            <el-option label="数据请求" value="GET"/>
+            <el-option label="表单提交" value="POST"/>
+            <el-option label="数据修改" value="PUT"/>
+            <el-option label="数据删除" value="DELETE"/>
+            <el-option label="上传" value="UPLOAD"/>
+            <el-option label="下载" value="DOWNLOAD"/>
+          </el-select>
+        </el-form-item>        <el-form-item
+          :rules="[ { required: true,type: 'number', message: '请输入排序数字', trigger: ['blur'] } ]"
+          label="资源排序"
+          prop="resourceSort"
+          label-width="85px">
+          <el-input v-model.number="resForm.resourceSort" type="number"/>
         </el-form-item>
-        <el-form-item label="手机号码" prop="title">
-          <el-input v-model="test"/>
+        <el-form-item
+          :rules="[ { required: true, message: '请输入资源描述', trigger: ['blur'] } ]"
+          label="资源描述"
+          prop="resourceDesc"
+          label-width="85px">
+          <el-input v-model="resForm.resourceDesc" type="textarea" />
         </el-form-item>
-
       </el-form>
       <div slot="footer" class="dialog-footer">
-        <el-button @click="addShowBol = false">取 消</el-button>
-        <el-button type="primary" @click="addUserAction">确 定</el-button>
+        <el-button @click="menuControlShow = false;">取 消</el-button>
+        <el-button type="primary" @click="resFormAction">确 定</el-button>
       </div>
     </el-dialog>
   </div>

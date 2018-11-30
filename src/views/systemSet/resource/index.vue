@@ -98,20 +98,20 @@
     </el-row>
 
     <!--新增/修改弹出层-->
-    <el-dialog :title="menuControlTitle" :visible.sync="menuControlShow" width="600" @close="menuFormClose">
-      <el-form ref="menuForm" :model="menuForm" :rules="rules" label-position="left" label-width="70px" style="padding: 0 20px;">
+    <el-dialog :title="menuControlTitle" :visible.sync="menuControlShow" width="600px" @close="resFormClose">
+      <el-form ref="resForm" :model="resForm" :rules="rules" label-position="left" label-width="70px" style="padding: 0 20px;">
         <el-form-item
           :rules="[ { required: true, message: '请输入资源名称', trigger: ['blur'] } ]"
           label="资源名称"
           prop="resourceName"
           label-width="85px">
-          <el-input v-model="menuForm.resourceName"/>
+          <el-input v-model="resForm.resourceName"/>
         </el-form-item>
         <el-form-item
           label="资源链接"
           prop="resourcePath"
           label-width="85px">
-          <el-input v-model="menuForm.resourcePath"/>
+          <el-input v-model="resForm.resourcePath"/>
         </el-form-item>
         <el-form-item
           :rules="[ { required: true, message: '请选择资源类型', trigger: ['blur'] } ]"
@@ -119,7 +119,7 @@
           prop="resourceType"
           label-width="85px">
           <el-select
-            v-model="menuForm.resourceType"
+            v-model="resForm.resourceType"
             style="width: 100%;"
             placeholder="请选择类型">
             <el-option label="数据请求" value="GET"/>
@@ -134,19 +134,19 @@
           label="资源排序"
           prop="resourceSort"
           label-width="85px">
-          <el-input v-model.number="menuForm.resourceSort" type="number"/>
+          <el-input v-model.number="resForm.resourceSort" type="number"/>
         </el-form-item>
         <el-form-item
           :rules="[ { required: true, message: '请输入资源描述', trigger: ['blur'] } ]"
           label="资源描述"
           prop="resourceDesc"
           label-width="85px">
-          <el-input v-model="menuForm.resourceDesc" type="textarea" />
+          <el-input v-model="resForm.resourceDesc" type="textarea" />
         </el-form-item>
       </el-form>
       <div slot="footer" class="dialog-footer">
         <el-button @click="menuControlShow = false;">取 消</el-button>
-        <el-button type="primary" @click="menuFormAction">确 定</el-button>
+        <el-button type="primary" @click="resFormAction">确 定</el-button>
       </div>
     </el-dialog>
   </div>
@@ -167,7 +167,7 @@ export default {
     var validateResUrl = (rule, value, callback) => {
       if (value === '') {
         callback(new Error('请输入资源名称'))
-      } else if (value !== this.menuForm.resourceBasePath) {
+      } else if (value !== this.resForm.resourceBasePath) {
         isFwResOnly({ resourcePath: value }).then(res => {
           if (res.data) {
             callback()
@@ -191,7 +191,7 @@ export default {
         * lefticon    ==>树图图标    不加图标直接设为空
         * */
       leftTree: {
-        searchTips: '请输入要搜索的菜单名',
+        searchTips: '请输入要搜索的资源名',
         treeDate: [],
         childrenStr: 'CHILDREN',
         labelName: 'RESOURCE_NAME',
@@ -251,7 +251,7 @@ export default {
       menuControlShow: false,
       tableLoading: true,
       formType: 1,
-      menuForm: {},
+      resForm: {},
       rules: {
         resourcePath: [
           { validator: validateResUrl, trigger: 'blur' },
@@ -273,7 +273,7 @@ export default {
       * pagerChange             对应表格下方分页 切换页 的事件
       * pagerSizeChange         对应表格下方分页 切换每页显示数量 的事件
       * fetchData               根据数据查询表格
-      * menuFormAction           模态框提交确定按钮
+      * resFormAction           模态框提交确定按钮
       * */
     handleSearch: function() {
       this.fetchData()
@@ -299,8 +299,8 @@ export default {
       this.table.param.index = 1
       this.fetchData()
     },
-    menuFormClose() {
-      this.$refs['menuForm'].clearValidate()
+    resFormClose() {
+      this.$refs['resForm'].clearValidate()
     },
     addMenuBtn() {
       this.menuCtlData = {
@@ -312,22 +312,22 @@ export default {
         resourceDesc: '',
         resourceBasePath: ''
       }
-      this.menuForm = this.menuCtlData
+      this.resForm = this.menuCtlData
       this.menuControlTitle = '新增资源'
       this.formType = 1
       this.menuControlShow = true
     },
     editMenu: function(row) {
       getFwResById({ resourceId: row.RESOURCE_ID }).then(res => {
-        this.menuForm = res.data
-        this.menuForm.resourceBasePath = this.menuForm.resourcePath
+        this.resForm = res.data
+        this.resForm.resourceBasePath = this.resForm.resourcePath
         this.menuControlTitle = '编辑资源'
         this.formType = 2
         this.menuControlShow = true
       })
     },
     deletMenu(row) {
-      this.$confirm('删除资源会删除下级所以资源及资源与角色的关系，是否删除资源' + row.RESOURCE_NAME + '?', '删除提示', {
+      this.$confirm('删除资源会删除下级所以资源及资源与角色的关系，是否删除资源 ' + row.RESOURCE_NAME + ' ?', '删除提示', {
         confirmButtonText: '确定',
         cancelButtonText: '取消',
         type: 'warning'
@@ -345,14 +345,14 @@ export default {
         })
       })
     },
-    menuFormAction() {
-      this.$refs['menuForm'].validate((valid) => {
+    resFormAction() {
+      this.$refs['resForm'].validate((valid) => {
         if (valid) {
           if (this.formType === 1) {
-            addFwRes(this.menuForm).then(res => {
+            addFwRes(this.resForm).then(res => {
               if (res.data) {
                 this.$message({
-                  message: '恭喜你，添加资源' + this.menuForm.resourceName + '成功！',
+                  message: '恭喜你，添加资源' + this.resForm.resourceName + '成功！',
                   type: 'success'
                 })
                 this.reFlashLeftData(this.table.param.resourceId)
@@ -360,13 +360,13 @@ export default {
                 this.$message.error(res.message)
               }
               this.menuControlShow = false
-              this.$refs['menuForm'].clearValidate()
+              this.$refs['resForm'].clearValidate()
             })
           } else {
-            updateFwRes(this.menuForm).then(res => {
+            updateFwRes(this.resForm).then(res => {
               if (res.data) {
                 this.$message({
-                  message: '恭喜你，修改资源' + this.menuForm.resourceName + '成功！',
+                  message: '恭喜你，修改资源' + this.resForm.resourceName + '成功！',
                   type: 'success'
                 })
                 this.reFlashLeftData(this.table.param.resourceId)
@@ -374,7 +374,7 @@ export default {
                 this.$message.error(res.message)
               }
               this.menuControlShow = false
-              this.$refs['menuForm'].clearValidate()
+              this.$refs['resForm'].clearValidate()
             })
           }
         } else {
