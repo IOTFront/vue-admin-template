@@ -49,7 +49,7 @@ export function updateFwRes(params) {
 export function getFwResById(params) {
   return request({
     url: '/fwResource/getFwResById',
-    method: 'post',
+    method: 'get',
     params
   })
 }
