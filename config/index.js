@@ -10,13 +10,13 @@ module.exports = {
     assetsSubDirectory: 'static',
     assetsPublicPath: '/',
     proxyTable: {
-/*      '/JointatTotems':{
+      '/JointatTotems':{
         target:'http://192.168.0.215:8090',
         changeOrigin:true,
         pathRewrith:{
           '^/JointatTotems': '/JointatTotems'
         }
-      }*/
+      }
     },
 
     // Various Dev Server settings

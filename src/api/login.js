@@ -3,7 +3,7 @@ import request from '@/utils/request'
 export function login(username, password) {
   return request({
     url: '/j_spring_security_check',
-    method: 'get',
+    method: 'post',
     params: {
       j_username: username,
       j_password: password

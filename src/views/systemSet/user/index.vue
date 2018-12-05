@@ -124,9 +124,11 @@
           <el-cascader
             :options="options"
             :props="orgprops"
+            :change-on-select="true"
             :show-all-levels="false"
             :value="userForm.orgId"
             v-model="userForm.orgId"
+            style="width: 100%;"
             expand-trigger="hover"/>
         </el-form-item>
         <el-form-item
@@ -138,12 +140,29 @@
           <el-input v-model="userForm.userPassword"/>
         </el-form-item>
         <el-form-item
-          :rules="[ { required: true, message: '请输入头像', trigger: ['blur'] } ]"
           label="用户头像"
           prop="userPhoto"
           label-width="85px">
-          <el-input v-model="userForm.userPhoto" type="textarea" />
+          <el-input v-model="userForm.userPhoto" type="hidden" />
+          <div class="setBtns">
+            <div v-if="userForm.userPhoto!=''">
+              <img :src="userForm.userPhoto" class="usrImgs" @click="userSelectImg">
+            </div>
+            <div v-else>
+              <el-button class="slBtns" @click="userSelectImg">选择头像</el-button>
+            </div>
+          </div>
+          <my-upload
+            v-model="imgCutUploadParams.show"
+            :width="300"
+            :height="300"
+            :params="imgCutUploadParams.params"
+            field="img"
+            img-format="png"
+            @crop-success="cropSuccess"/>
+
         </el-form-item>
+
       </el-form>
       <div slot="footer" class="dialog-footer">
         <el-button @click="menuControlShow = false;">取 消</el-button>
@@ -157,10 +176,12 @@
 import { getUserList, addFwUser, updateFwUser, deleteFwUserById, getFwUser, isFwUserOnly } from '@/api/systemSet/userControl/table'
 import { getFwOrgList } from '@/api/systemSet/organization'
 import pagination from '@/components/pagination'
+import imgCutUpload from '@/components/imgCutUpload'
 
 export default {
   components: {
-    pagination
+    pagination,
+    'my-upload': imgCutUpload
   },
   data: function() {
     var validateuserCount = (rule, value, callback) => {
@@ -192,6 +213,18 @@ export default {
       }
     }
     return {
+      /* 图片剪切相关内容*/
+      imgCutUploadParams: {
+        show: false,
+        params: {
+          token: '123456798',
+          name: 'avatar'
+        },
+        headers: {
+          smail: '*_~'
+        },
+        imgDataUrl: '' // base64地址存储位置
+      },
       /* 机构级联选择器*/
       options: {
 
@@ -245,7 +278,7 @@ export default {
         * formType          模态框对应事件   1新增 2修改
         * */
       menuCtlData: {
-        orgId: '',
+        orgId: [],
         userAccount: '',
         userPassword: '',
         userName: '',
@@ -290,7 +323,7 @@ export default {
     },
     addUserBtn() {
       this.menuCtlData = {
-        orgId: '',
+        orgId: [],
         userAccount: '',
         userPassword: '',
         userName: '',
@@ -306,8 +339,14 @@ export default {
     },
     editMenu: function(row) {
       getFwUser({ userId: row.USER_ID }).then(res => {
-        res.userAccountBase = res.userAccount
-        this.userForm = res.data
+        res.data.fwUser.userAccountBase = res.data.fwUser.userAccount
+        this.userForm = res.data.fwUser
+        var NewArry = []
+        res.data.fwOrgMap.forEach((a, b) => {
+          NewArry.push(a.ORG_ID)
+        })
+        this.userForm.orgId = NewArry
+        console.log(this.userForm)
         this.menuControlTitle = '编辑用户'
         this.formType = 2
         this.menuControlShow = true
@@ -336,11 +375,13 @@ export default {
     userFormAction() {
       this.$refs['userForm'].validate((valid) => {
         if (valid) {
+          var SendObj = JSON.parse(JSON.stringify(this.userForm))
+          SendObj.orgId = SendObj.orgId[SendObj.orgId.length - 1]
           if (this.formType === 1) {
-            addFwUser(this.userForm).then(res => {
+            addFwUser(SendObj).then(res => {
               if (res.data) {
                 this.$message({
-                  message: '恭喜你，添加用户' + this.userForm.resourceName + '成功！',
+                  message: '恭喜你，添加用户' + SendObj.userName + '成功！',
                   type: 'success'
                 })
                 this.fetchData()
@@ -348,13 +389,22 @@ export default {
                 this.$message.error(res.message)
               }
               this.menuControlShow = false
-              this.$refs['userForm'].clearValidate()
+              this.userForm = {
+                orgId: this.userForm.orgId,
+                userAccount: '',
+                userPassword: '',
+                userName: '',
+                userSex: '',
+                userPhoto: '',
+                userMobile: '',
+                userAccountBase: ''
+              }
             })
           } else {
-            updateFwUser(this.userForm).then(res => {
+            updateFwUser(SendObj).then(res => {
               if (res.data) {
                 this.$message({
-                  message: '恭喜你，修改用户' + this.userForm.resourceName + '成功！',
+                  message: '恭喜你，修改用户' + SendObj.userName + '成功！',
                   type: 'success'
                 })
                 this.fetchData()
@@ -362,7 +412,16 @@ export default {
                 this.$message.error(res.message)
               }
               this.menuControlShow = false
-              this.$refs['userForm'].clearValidate()
+              this.userForm = {
+                orgId: this.userForm.orgId,
+                userAccount: '',
+                userPassword: '',
+                userName: '',
+                userSex: '',
+                userPhoto: '',
+                userMobile: '',
+                userAccountBase: ''
+              }
             })
           }
         } else {
@@ -382,11 +441,28 @@ export default {
         this.table.count = response.data.count
         this.tableLoading = false
       })
+    },
+    cropSuccess(imgDataUrl, field) {
+      console.log('-------- crop success --------' + imgDataUrl)
+      this.userForm.userPhoto = imgDataUrl
+    },
+    userSelectImg: function() {
+      this.imgCutUploadParams.show = true
     }
   }
 }
 </script>
 
 <style rel="stylesheet/scss" lang="scss" scoped>
-
+.setBtns{
+  position: relative;
+  top:-40px;
+  max-height: 160px;
+  .usrImgs{
+    width: 200px;
+    height: 200px;
+    padding: 2px;
+    border: 1px solid #ececec;
+  }
+}
 </style>

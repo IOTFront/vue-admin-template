@@ -35,7 +35,7 @@ export function deleteFwUserById(params) {
 /*  通过主键查询用户*/
 export function getFwUser(params) {
   return request({
-    url: '/fwUser/getFwUser',
+    url: '/fwUser/loadUserInfo',
     method: 'get',
     params
   })
