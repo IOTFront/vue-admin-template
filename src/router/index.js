@@ -89,6 +89,21 @@ export const constantRouterMap = [
     ]
   },
   {
+    path: '/business',
+    component: Layout,
+    redirect: '/business/test',
+    name: '业务系统',
+    meta: { title: '业务系统', icon: 'sysSet' },
+    children: [
+      {
+        path: 'test',
+        name: '测试地址',
+        component: () => import('@/views/business/test'),
+        meta: { title: '测试地址', icon: 'userSet' }
+      }
+    ]
+  },
+  {
     path: 'external-link',
     component: Layout,
     children: [
