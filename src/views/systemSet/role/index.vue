@@ -154,25 +154,17 @@ export default {
         selectArry: ''
       },
       /* 表格新增/修改相关
-          * orgId	[string]	是	机构ID
-          * userAccount	[string]	是	账号
-          * userPassword	[string]	是	密码
-          * userName	[string]	是	昵称
-          * userSex	[string]	是	性别【0-男、1-女】
-          * userMobile	[string]	是	手机
-          * userPhoto 复制	[string]	是	照片（Base64）
+          * roleName	[string]	是	名称
+          * roleCode	[string]	是	标识，必须以 "ROLE_" 开头
+          * roleSort	[number]	是	排序
           *
           * menuControlShow   模态框显示、隐藏
           * formType          模态框对应事件   1新增 2修改
           * */
       menuCtlData: {
-        orgId: [],
-        userAccount: '',
-        userPassword: '',
-        userName: '',
-        userSex: '',
-        userPhoto: '',
-        userMobile: ''
+        roleName: '',
+        roleCode: '',
+        roleSort: ''
       },
       menuControlTitle: '',
       menuControlShow: false,
@@ -211,14 +203,9 @@ export default {
     },
     addRoleBtn() {
       this.menuCtlData = {
-        orgId: [],
-        userAccount: '',
-        userPassword: '',
-        userName: '',
-        userSex: '',
-        userPhoto: '',
-        userMobile: '',
-        userAccountBase: ''
+        roleName: '',
+        roleCode: '',
+        roleSort: ''
       }
       this.roleForm = this.menuCtlData
       this.menuControlTitle = '新增角色'
@@ -226,14 +213,9 @@ export default {
       this.menuControlShow = true
     },
     editMenu: function(row) {
-      getFwUser({ userId: row.USER_ID }).then(res => {
+      getFwRoleById({ roleId: row.ORG_ID }).then(res => {
         res.data.fwUser.userAccountBase = res.data.fwUser.userAccount
         this.roleForm = res.data.fwUser
-        var NewArry = []
-        res.data.fwOrgMap.forEach((a, b) => {
-          NewArry.push(a.ORG_ID)
-        })
-        this.roleForm.orgId = NewArry
         console.log(this.roleForm)
         this.menuControlTitle = '编辑角色'
         this.formType = 2
@@ -241,15 +223,15 @@ export default {
       })
     },
     deletMenu(row) {
-      this.$confirm('删除角色会删除角色的关联信息，是否删除角色 ' + row.USER_NAME + ' ?', '删除提示', {
+      this.$confirm('删除角色会删除角色的关联信息，是否删除角色 ' + row.ORG_NAME + ' ?', '删除提示', {
         confirmButtonText: '确定',
         cancelButtonText: '取消',
         type: 'warning'
       }).then(() => {
-        deleteFwUserById({ userId: row.USER_ID }).then(response => {
+        deleteFwRoleById({ orgId: row.ORG_ID }).then(response => {
           if (response.data) {
             this.$message({
-              message: '恭喜你，删除角色' + row.USER_NAME + '成功！',
+              message: '恭喜你，删除角色' + row.ORG_NAME + '成功！',
               type: 'success'
             })
             this.fetchData()
@@ -264,9 +246,8 @@ export default {
       this.$refs['roleForm'].validate((valid) => {
         if (valid) {
           var SendObj = JSON.parse(JSON.stringify(this.roleForm))
-          SendObj.orgId = SendObj.orgId[SendObj.orgId.length - 1]
           if (this.formType === 1) {
-            addFwUser(SendObj).then(res => {
+            addFwRole(SendObj).then(res => {
               if (res.data) {
                 this.$message({
                   message: '恭喜你，添加角色' + SendObj.userName + '成功！',
@@ -278,18 +259,13 @@ export default {
               }
               this.menuControlShow = false
               this.roleForm = {
-                orgId: this.roleForm.orgId,
-                userAccount: '',
-                userPassword: '',
-                userName: '',
-                userSex: '',
-                userPhoto: '',
-                userMobile: '',
-                userAccountBase: ''
+                roleName: '',
+                roleCode: '',
+                roleSort: ''
               }
             })
           } else {
-            updateFwUser(SendObj).then(res => {
+            updateFwRole(SendObj).then(res => {
               if (res.data) {
                 this.$message({
                   message: '恭喜你，修改角色' + SendObj.userName + '成功！',
@@ -301,14 +277,9 @@ export default {
               }
               this.menuControlShow = false
               this.roleForm = {
-                orgId: this.roleForm.orgId,
-                userAccount: '',
-                userPassword: '',
-                userName: '',
-                userSex: '',
-                userPhoto: '',
-                userMobile: '',
-                userAccountBase: ''
+                roleName: '',
+                roleCode: '',
+                roleSort: ''
               }
             })
           }
