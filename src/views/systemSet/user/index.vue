@@ -13,11 +13,12 @@
               :change-on-select="true"
               :clearable="true"
               v-model="table.param.orgId"
+              filterable
               style="width: 100%;"
               expand-trigger="hover"/>
           </el-form-item>
           <el-form-item label="角色">
-            <el-select v-model="table.param.roleId" :clearable="true" placeholder="请选择">
+            <el-select v-model="table.param.roleId" filterable :clearable="true" placeholder="请选择">
               <el-option v-for="opt in roleSelectDate" :label="opt.ROLE_NAME" :value="opt.ROLE_ID"/>
             </el-select>
           </el-form-item>
@@ -117,6 +118,7 @@
             :value="userForm.orgId"
             v-model="userForm.orgId"
             style="width: 100%;"
+            filterable
             expand-trigger="hover"/>
         </el-form-item>
         <el-form-item
