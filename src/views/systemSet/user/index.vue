@@ -18,7 +18,7 @@
               expand-trigger="hover"/>
           </el-form-item>
           <el-form-item label="角色">
-            <el-select v-model="table.param.roleId" filterable :clearable="true" placeholder="请选择">
+            <el-select v-model="table.param.roleId" :clearable="true" filterable placeholder="请选择">
               <el-option v-for="opt in roleSelectDate" :label="opt.ROLE_NAME" :value="opt.ROLE_ID"/>
             </el-select>
           </el-form-item>
@@ -42,7 +42,7 @@
       </div>
       <div class="tableControl">
         <el-button type="success" @click="addUserBtn">新增</el-button>
-        <el-button type="danger" >批量删除</el-button>
+        <el-button type="danger" @click="deleteBatchFwUser">批量删除</el-button>
       </div>
       <div v-loading="tableLoading" class="tableConts">
         <el-table
@@ -75,12 +75,13 @@
           <el-table-column
             fixed="right"
             label="操作"
-            width="110">
+            width="140">
             <template slot-scope="scope">
               <div class="operationConts">
                 <el-button type="text" size="small" title="所属机构修改" @click="editMenu(scope.row)"><svg-icon icon-class="tree" /></el-button>
-                <el-button type="text" size="small" title="删除" @click="deletMenu(scope.row)"><svg-icon icon-class="deletBtn" /></el-button>
+                <el-button type="text" size="small" title="角色修改" @click="editRole(scope.row)"><svg-icon icon-class="roleSet" /></el-button>
                 <el-button type="text" size="small" title="密码修改" @click="changePwd(scope.row)"><svg-icon icon-class="lock" /></el-button>
+                <el-button type="text" size="small" title="删除" @click="deletMenu(scope.row)"><svg-icon icon-class="deletBtn" /></el-button>
               </div>
             </template>
           </el-table-column>
@@ -136,11 +137,32 @@
         <el-button type="primary" @click="userFormAction">确 定</el-button>
       </div>
     </el-dialog>
+
+    <!--账户角色弹出层-->
+    <el-dialog :visible.sync="roleShow" title="角色管理" width="600px">
+      <div class="centerBlps">
+        <el-scrollbar wrap-class="scrollbar-wrapper">
+          <el-tree
+            ref="roleTree"
+            :data="roleDate"
+            :props="roleDefaultProps"
+            :expand-on-click-node="false"
+            :check-on-click-node="true"
+            default-expand-all
+            show-checkbox
+            node-key="ROLE_ID"/>
+        </el-scrollbar>
+      </div>
+      <div slot="footer" class="dialog-footer">
+        <el-button @click="roleShow = false;">取 消</el-button>
+        <el-button type="primary" @click="roleAction">确 定</el-button>
+      </div>
+    </el-dialog>
   </div>
 </template>
 
 <script>
-import { getUserList, addFwUser, updateFwUserOrg, deleteFwUserById, getFwUser, isFwUserOnly, updateUserPassword } from '@/api/systemSet/userControl/table'
+import { getUserList, addFwUser, updateFwUserOrg, deleteFwUserById, deleteBatchFwUser, getFwUser, isFwUserOnly, updateUserPassword, getFwUserToRole, updateFwUserRole } from '@/api/systemSet/userControl/table'
 import { getFwOrgList } from '@/api/systemSet/organization'
 import { findFwRole } from '@/api/systemSet/role'
 import pagination from '@/components/pagination'
@@ -181,6 +203,13 @@ export default {
       }
     }
     return {
+      /* 用户角色切换*/
+      roleDate: [], /* 菜单集合*/
+      roleChecked: [], /* 当前菜单选中项*/
+      roleDefaultProps: { /* 菜单配置项*/
+        children: 'CHILDREN',
+        label: 'ROLE_NAME'
+      },
       /* 机构级联选择器*/
       options: [],
       orgprops: {
@@ -247,6 +276,7 @@ export default {
       },
       menuControlTitle: '',
       menuControlShow: false,
+      roleShow: false,
       userEdit: false,
       tableLoading: true,
       formType: 1,
@@ -261,6 +291,7 @@ export default {
     })
     findFwRole({ index: 1, size: 100 }).then(response => {
       this.roleSelectDate = response.data.listMapData
+      this.roleDate = response.data.listMapData
     })
   },
   methods: {
@@ -313,6 +344,34 @@ export default {
       this.userEdit = false
       this.menuControlShow = true
     },
+    deleteBatchFwUser() {
+      var sendArry = []
+      if (this.table.selectArry.length <= 0) {
+        this.$message.error('请选择要删除的账号！')
+      } else {
+        this.$confirm('删除账号会删除账号的关联信息，是否删除已选中的账号 ?', '删除提示', {
+          confirmButtonText: '确定',
+          cancelButtonText: '取消',
+          type: 'warning'
+        }).then(() => {
+          this.table.selectArry.forEach((a, b) => {
+            sendArry.push(a.USER_ID)
+          })
+          deleteBatchFwUser({ userIds: sendArry.toString() }).then(response => {
+            if (response.data) {
+              this.$message({
+                message: '恭喜你，批量删除成功！',
+                type: 'success'
+              })
+              this.fetchData()
+            } else {
+              this.$message.error(response.message)
+            }
+          }).catch(() => {
+          })
+        })
+      }
+    },
     editMenu: function(row) {
       getFwUser({ userId: row.USER_ID }).then(res => {
         res.data.fwUser.userAccountBase = res.data.fwUser.userAccount
@@ -327,6 +386,38 @@ export default {
         this.formType = 2
         this.userEdit = true
         this.menuControlShow = true
+      })
+    },
+    editRole(row) {
+      this.selectUser = row
+      getFwUserToRole({ userId: row.USER_ID }).then(res => {
+        this.roleChecked = []
+        res.data.forEach((a, b) => {
+          this.roleChecked.push(a.ROLE_ID)
+        })
+        this.roleShow = true
+        this.$nextTick(() => {
+          /* 展开所有节点*/
+          this.$refs.roleTree.setCheckedKeys(this.roleChecked)
+        })
+      })
+    },
+    roleAction() {
+      var sendJSON = {
+        userId: this.selectUser.USER_ID,
+        roleIds: this.$refs.roleTree.getCheckedKeys().toString()
+      }
+      updateFwUserRole(sendJSON).then(response => {
+        if (response.data) {
+          this.$message({
+            message: '恭喜你，已成功修改账号 ' + this.selectUser.USER_ACCOUNT + ' 对应的角色！',
+            type: 'success'
+          })
+          this.fetchData()
+        } else {
+          this.$message.error(response.message)
+        }
+        this.roleShow = false
       })
     },
     deletMenu(row) {
@@ -463,6 +554,12 @@ export default {
     height: 200px;
     padding: 2px;
     border: 1px solid #ececec;
+  }
+}
+.centerBlps{
+  max-height:55vh;
+  .el-scrollbar {
+    height: 55vh;
   }
 }
 </style>

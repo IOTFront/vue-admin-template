@@ -32,7 +32,7 @@ export function deleteFwUserById(params) {
     params
   })
 }
-/*  通过主键查询用户*/
+/*  通过主键查询用户  同时查询带有上级的组织信息*/
 export function getFwUser(params) {
   return request({
     url: '/fwUser/loadUserInfo',
@@ -58,3 +58,29 @@ export function updateUserPassword(params) {
   })
 }
 
+/*  查询用户拥有的角色*/
+export function getFwUserToRole(params) {
+  return request({
+    url: '/fwUser/getFwUserToRole',
+    method: 'post',
+    params
+  })
+}
+
+/*  修改用户拥有的角色*/
+export function updateFwUserRole(params) {
+  return request({
+    url: '/fwUser/updateFwUserRole',
+    method: 'post',
+    params
+  })
+}
+
+/*  批量删除用户*/
+export function deleteBatchFwUser(params) {
+  return request({
+    url: '/fwUser/deleteBatchFwUser',
+    method: 'post',
+    params
+  })
+}
