@@ -37,7 +37,8 @@
               <el-form-item label="操作">
                 <el-button type="primary" icon="el-icon-search" @click="handleSearch">搜索</el-button>
                 <el-button type="primary" icon="el-icon-refresh" @click="resetSearch">重置</el-button>
-            </el-form-item>            </el-form>
+              </el-form-item>
+            </el-form>
           </div>
           <div class="tableControl">
             <el-button type="success" @click="addMenuBtn">新增</el-button>

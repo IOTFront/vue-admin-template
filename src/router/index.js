@@ -77,6 +77,33 @@ export const constantRouterMap = [
     ]
   },
   {
+    path: '/dataSet',
+    component: Layout,
+    redirect: '/dataSet/dictionarySet',
+    name: '数据管理',
+    meta: { title: '数据管理', icon: 'example' },
+    children: [
+      {
+        path: 'dictionarySet',
+        name: '字典管理',
+        component: () => import('@/views/dataSet/dictionarySet'),
+        meta: { title: '字典管理', icon: 'dictionarySet' }
+      },
+      {
+        path: 'areaSet',
+        name: '区划设置',
+        component: () => import('@/views/dataSet/areaSet'),
+        meta: { title: '区划设置', icon: 'areaSet' }
+      },
+      {
+        path: 'surnameSet',
+        name: '姓氏管理',
+        component: () => import('@/views/dataSet/surnameSet'),
+        meta: { title: '姓氏管理', icon: 'surnameSet' }
+      }
+    ]
+  },
+  {
     path: '/icon',
     component: Layout,
     children: [
