@@ -67,23 +67,19 @@
     <!--新增/修改弹出层-->
     <el-dialog :title="menuControlTitle" :visible.sync="baseControlShow" width="600px" @close="roleFormClose">
       <el-form ref="roleForm" :model="roleForm" :rules="rules" label-position="left" label-width="70px" style="padding: 0 20px;">
-
         <el-form-item
-          :rules="[ { required: true, message: '角色名称', trigger: ['blur'] } ]"
           label="角色名称"
           prop="roleName"
           label-width="85px">
           <el-input v-model="roleForm.roleName"/>
         </el-form-item>
         <el-form-item
-          :rules="[ { required: true, message: '角色标识', trigger: ['blur'] } ]"
           label="角色标识"
           prop="roleCode"
           label-width="85px">
           <el-input v-model="roleForm.roleCode"/>
         </el-form-item>
         <el-form-item
-          :rules="[ { required: true, message: '角色排序', trigger: ['blur'] } ]"
           label="角色排序"
           prop="roleSort"
           label-width="85px">
@@ -116,6 +112,7 @@
         <el-button type="primary" @click="roleMenuAction">确 定</el-button>
       </div>
     </el-dialog>
+
     <!--资源编辑弹出层-->
     <el-dialog :visible.sync="resControlShow" :title="'资源管理-'+selectRole.ROLE_NAME" width="600px">
       <div class="centerBlps">
@@ -152,9 +149,10 @@ export default {
   },
   data: function() {
     var checkRoleCode = (rule, value, callback) => {
+      console.log(2)
       if (value === '') {
         callback(new Error('请输入角色标识'))
-      } else if (value !== this.roleForm.userAccountBase) {
+      } else if (value !== this.roleForm.roleCodeBase) {
         isRoleCodeOnly({ roleCode: value }).then(res => {
           if (res.data) {
             callback()
@@ -270,7 +268,8 @@ export default {
       this.menuCtlData = {
         roleName: '',
         roleCode: '',
-        roleSort: ''
+        roleSort: '',
+        roleCodeBase: ''
       }
       this.roleForm = this.menuCtlData
       this.menuControlTitle = '新增角色'
@@ -279,7 +278,7 @@ export default {
     },
     editBase: function(row) {
       getFwRoleById({ roleId: row.ROLE_ID }).then(res => {
-        res.data.RoleBase = JSON.parse(JSON.stringify(res.data))
+        res.data.roleCodeBase = res.data.roleCode
         this.roleForm = res.data
         console.log(this.roleForm)
         this.menuControlTitle = '编辑角色'
