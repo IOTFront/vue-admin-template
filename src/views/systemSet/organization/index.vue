@@ -17,11 +17,14 @@
       <el-col :xs="24" :sm="16" :md="14" :lg="18" :xl="19" :key="thiTime+'table'" style="padding-left: 20px;">
         <div class="tableOutConts">
           <div class="searchPanel">
-            <el-form :inline="true" :model="table.param" class="el-form-conts">
+            <el-form :inline="true" :model="table.param" label-position="top" class="el-form-conts">
               <el-form-item label="名称">
                 <el-input v-model="table.param.orgName" placeholder="通过名称搜索"/>
               </el-form-item>
-              <el-button type="primary" icon="el-icon-search" @click="handleSearch">搜索</el-button>
+              <el-form-item label="操作">
+                <el-button type="primary" icon="el-icon-search" @click="handleSearch">搜索</el-button>
+                <el-button type="primary" icon="el-icon-refresh" @click="resetSearch">重置</el-button>
+              </el-form-item>
             </el-form>
           </div>
           <div class="tableControl">
@@ -37,7 +40,7 @@
                 fixed
                 prop="ORG_NAME"
                 label="机构名称"
-                width="160"/>
+                width="260"/>
               <el-table-column
                 prop="ORG_SORT"
                 label="机构排序" />
@@ -51,10 +54,12 @@
               <el-table-column
                 fixed="right"
                 label="操作"
-                width="160">
+                width="80">
                 <template slot-scope="scope">
-                  <el-button type="text" size="small" @click="editMenu(scope.row)">编辑</el-button>
-                  <el-button type="text" size="small" @click="deletMenu(scope.row)">删除</el-button>
+                  <div class="operationConts">
+                    <el-button type="text" size="small" title="编辑" @click="editMenu(scope.row)"><svg-icon icon-class="editBtn" /></el-button>
+                    <el-button type="text" size="small" title="删除" @click="deletMenu(scope.row)"><svg-icon icon-class="deletBtn" /></el-button>
+                  </div>
                 </template>
               </el-table-column>
             </el-table>
@@ -183,6 +188,15 @@ export default {
         * orgManageFormAction           模态框提交确定按钮
         * */
     handleSearch: function() {
+      this.fetchData()
+    },
+    resetSearch: function() {
+      this.table.param = {
+        orgId: this.table.param.orgId,
+        orgName: '',
+        index: 1,
+        size: 10
+      }
       this.fetchData()
     },
     getTypeValue: function(str) {

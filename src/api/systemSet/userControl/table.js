@@ -16,10 +16,10 @@ export function addFwUser(params) {
     params
   })
 }
-/*  修改用户*/
-export function updateFwUser(params) {
+/*  修改用户组织机构*/
+export function updateFwUserOrg(params) {
   return request({
-    url: '/fwUser/updateFwUser',
+    url: '/fwUser/updateUserOrg',
     method: 'post',
     params
   })
@@ -48,3 +48,13 @@ export function isFwUserOnly(params) {
     params
   })
 }
+
+/*  修改账号密码*/
+export function updateUserPassword(params) {
+  return request({
+    url: '/fwUser/updateUserPassword',
+    method: 'post',
+    params
+  })
+}
+
