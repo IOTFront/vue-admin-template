@@ -15,6 +15,7 @@
           <el-form-item label="是否推荐">
             <el-select
               v-model="table.param.surnameRecommend"
+              :clearable="true"
               placeholder="请选择">
               <el-option label="否" value="0"/>
               <el-option label="是" value="1"/>
@@ -46,12 +47,8 @@
             label="拼音"/>
 
           <el-table-column
-            prop="SURNAME_PINYIN"
-            label="笔画数"/>
-
-          <el-table-column
             prop="SURNAME_STROKES"
-            label="拼音"/>
+            label="笔画数"/>
 
           <el-table-column
             prop="SURNAME_SORT"

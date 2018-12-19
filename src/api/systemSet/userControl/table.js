@@ -84,3 +84,22 @@ export function deleteBatchFwUser(params) {
     params
   })
 }
+
+/*  修改用户冻结状态*/
+export function updateFwUserNonlocked(params) {
+  return request({
+    url: '/fwUser/updateFwUserNonlocked',
+    method: 'post',
+    params
+  })
+}
+
+/*  修改用户过期状态*/
+export function updateFwUserNonexpired(params) {
+  return request({
+    url: '/fwUser/updateFwUserNonexpired',
+    method: 'post',
+    params
+  })
+}
+

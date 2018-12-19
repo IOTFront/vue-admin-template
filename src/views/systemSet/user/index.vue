@@ -23,13 +23,13 @@
             </el-select>
           </el-form-item>
           <el-form-item label="账号是否锁定">
-            <el-select v-model="table.param.userNonlocked" placeholder="请选择">
+            <el-select v-model="table.param.userNonlocked" :clearable="true" placeholder="请选择">
               <el-option label="未锁定" value="0"/>
               <el-option label="已锁定" value="1"/>
             </el-select>
           </el-form-item>
           <el-form-item label="账号是否过期">
-            <el-select v-model="table.param.userNonexpired" placeholder="请选择">
+            <el-select v-model="table.param.userNonexpired" :clearable="true" placeholder="请选择">
               <el-option label="未过期" value="0"/>
               <el-option label="已过期" value="1"/>
             </el-select>
@@ -60,18 +60,32 @@
             width="150"/>
           <el-table-column
             prop="ROLE_NAME"
-            label="角色名称"
-            width="320"/>
+            label="角色名称"/>
           <el-table-column
             prop="ORG_NAME"
-            label="所属机构名称"
-            width="220"/>
+            label="所属机构名称"/>
           <el-table-column
-            prop="USER_NONLOCKED"
-            label="是否锁定"/>
+            prop="USER_NONLOCKED_NAME"
+            width="120"
+            label="是否锁定">
+            <template slot-scope="scope">
+              <div class="fixedChange">
+                <span>{{ scope.row.USER_NONLOCKED_NAME }}</span>
+                <el-button type="text" size="small" class="userChangeTurn" title="切换锁定状态" @click="changeLocked(scope.row)"><svg-icon icon-class="changeTurn" /></el-button>
+              </div>
+            </template>
+          </el-table-column>
           <el-table-column
-            prop="USER_NONEXPIRED"
-            label="是否过期"/>
+            prop="USER_NONEXPIRED_NAME"
+            width="120"
+            label="是否过期">
+            <template slot-scope="scope">
+              <div class="fixedChange">
+                <span>{{ scope.row.USER_NONEXPIRED_NAME }}</span>
+                <el-button type="text" size="small" class="userChangeTurn" title="切换过期状态" @click="changeExpired(scope.row)"><svg-icon icon-class="changeTurn" /></el-button>
+              </div>
+            </template>
+          </el-table-column>
           <el-table-column
             fixed="right"
             label="操作"
@@ -162,7 +176,7 @@
 </template>
 
 <script>
-import { getUserList, addFwUser, updateFwUserOrg, deleteFwUserById, deleteBatchFwUser, getFwUser, isFwUserOnly, updateUserPassword, getFwUserToRole, updateFwUserRole } from '@/api/systemSet/userControl/table'
+import { getUserList, addFwUser, updateFwUserOrg, deleteFwUserById, deleteBatchFwUser, getFwUser, isFwUserOnly, updateUserPassword, getFwUserToRole, updateFwUserRole, updateFwUserNonlocked, updateFwUserNonexpired } from '@/api/systemSet/userControl/table'
 import { getFwOrgList } from '@/api/systemSet/organization'
 import { findFwRole } from '@/api/systemSet/role'
 import pagination from '@/components/pagination'
@@ -440,6 +454,40 @@ export default {
         })
       })
     },
+    changeLocked(row) {
+      var sendJson = {
+        userId: row.USER_ID,
+        userNonlocked: (row.USER_NONLOCKED === '0' ? 1 : 0)
+      }
+      updateFwUserNonlocked(sendJson).then(response => {
+        if (response.data) {
+          this.$message({
+            message: '恭喜你，已成功' + (sendJson.userNonlocked === 0 ? '解锁' : '锁定') + '账号 ' + row.USER_ACCOUNT + '！',
+            type: 'success'
+          })
+          this.fetchData()
+        } else {
+          this.$message.error(response.message)
+        }
+      })
+    },
+    changeExpired(row) {
+      var sendJson = {
+        userId: row.USER_ID,
+        userNonexpired: (row.USER_NONEXPIRED === '0' ? 1 : 0)
+      }
+      updateFwUserNonexpired(sendJson).then(response => {
+        if (response.data) {
+          this.$message({
+            message: '恭喜你，已成功设置' + '账号 ' + row.USER_ACCOUNT + ' 为' + (sendJson.userNonexpired === 0 ? '未过期' : '过期') + '！',
+            type: 'success'
+          })
+          this.fetchData()
+        } else {
+          this.$message.error(response.message)
+        }
+      })
+    },
     changePwd(row) {
       this.$prompt('请输入“' + row.USER_ACCOUNT + '”的新密码', '提示', {
         confirmButtonText: '确定',
@@ -531,9 +579,8 @@ export default {
       }
       getUserList(searchJSON).then(response => {
         response.data.listMapData.forEach((a, b) => {
-          a.USER_SEX = (a.USER_SEX === '0' ? '男' : '女')
-          a.USER_NONLOCKED = (a.USER_NONLOCKED === '0' ? '未锁定' : '已锁定')
-          a.USER_NONEXPIRED = (a.USER_NONEXPIRED === '0' ? '未过期' : '已过期')
+          a.USER_NONLOCKED_NAME = (a.USER_NONLOCKED === '0' ? '未锁定' : '已锁定')
+          a.USER_NONEXPIRED_NAME = (a.USER_NONEXPIRED === '0' ? '未过期' : '已过期')
         })
         this.table.data = response.data.listMapData
         this.table.count = response.data.count
@@ -554,6 +601,15 @@ export default {
     height: 200px;
     padding: 2px;
     border: 1px solid #ececec;
+  }
+}
+.fixedChange{
+  padding: 10px 0;
+  .userChangeTurn{
+    float: right;
+    font-size: 18px;
+    padding: 0;
+    font-weight: bold;
   }
 }
 .centerBlps{
