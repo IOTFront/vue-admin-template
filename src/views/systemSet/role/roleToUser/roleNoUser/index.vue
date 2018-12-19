@@ -158,6 +158,7 @@ export default {
       } else {
         this.contLayout = [24, 0]
       }
+      this.reSelectCheckbox()
       this.$emit('selectUsers', this.selectData)
     }
   },
@@ -250,6 +251,30 @@ export default {
         }
       })
     },
+    reSelectCheckbox() {
+      var NewArry = []
+      var UnArry = []
+      this.table.data.forEach((a) => {
+        var TsBol = false
+        this.selectData.forEach((as) => {
+          if (a.USER_ID === as.USER_ID) {
+            TsBol = true
+          }
+        })
+        if (TsBol) {
+          NewArry.push(a)
+        } else {
+          UnArry.push(a)
+        }
+      })
+      console.log(NewArry)
+      NewArry.forEach(row => {
+        this.$refs[this.roleid + 'userTbs'].toggleRowSelection(row, true)
+      })
+      UnArry.forEach(row => {
+        this.$refs[this.roleid + 'userTbs'].toggleRowSelection(row, false)
+      })
+    },
     pagerChange: function(pager) {
       this.table.param.index = pager
       this.fetchData()
@@ -291,24 +316,10 @@ export default {
         this.table.data = response.data.listMapData
         this.table.count = response.data.count
         this.tableLoading = false
-        var NewArry = []
-        this.table.data.forEach((a) => {
-          var TsBol = false
-          this.selectData.forEach((as) => {
-            if (a.USER_ID === as.USER_ID) {
-              TsBol = true
-            }
-          })
-          if (TsBol) {
-            NewArry.push(a)
-          }
-        })
+        /* 等待加载完毕再设置选中*/
         this.$nextTick(function() {
-          NewArry.forEach(row => {
-            this.$refs[this.roleid + 'userTbs'].toggleRowSelection(row)
-          })
+          this.reSelectCheckbox()
         })
-        console.log(NewArry)
       })
     }
   }

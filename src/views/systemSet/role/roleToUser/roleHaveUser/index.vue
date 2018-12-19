@@ -125,12 +125,6 @@ export default {
       }
     }
   },
-  // watch: {
-  //   roleid() {
-  //     this.roleId = this.roleid
-  //     this.fetchData()
-  //   }
-  // },
   created: function() {
     this.fetchData()
   },
