@@ -107,3 +107,13 @@ export function findFwRole(params) {
     params
   })
 }
+
+/* 查询角色未拥有的用户（分页查询）*/
+export function findFwRoleNoToUser(params) {
+  return request({
+    url: '/fwRole/findFwRoleNoToUser',
+    method: 'post',
+    params
+  })
+}
+

@@ -1,215 +1,236 @@
 <template>
-  <div class="app-container tableOutConts">
-    <el-row>
-      <el-col :sm="8" :md="10" :lg="6" :xl="5" class="hidden-xs-only">
-        <LeftTree
-          :key="thiTime+'table'"
-          :searchtips="leftTree.searchTips"
-          :treedate="leftTree.treeDate"
-          :childrenstr="leftTree.childrenStr"
-          :labelname="leftTree.labelName"
-          :selectkey="leftTree.selectkey"
-          :selectnode="leftTree.selectNode"
-          :lefticon="leftTree.lefticon"
-          @nodeclcik="treeNodeClick"
-        />
-      </el-col>
-      <el-col :xs="24" :sm="16" :md="14" :lg="18" :xl="19" :key="thiTime+'table'" style="padding-left: 20px;">
-        <div class="tableOutConts">
-          <div class="searchPanel">
-            <el-form :inline="true" :model="table.param" label-position="top" class="el-form-conts">
-              <el-form-item label="名称">
-                <el-input v-model="table.param.orgName" placeholder="通过名称搜索"/>
-              </el-form-item>
-              <el-form-item label="操作">
-                <el-button type="primary" icon="el-icon-search" @click="handleSearch">搜索</el-button>
-                <el-button type="primary" icon="el-icon-refresh" @click="resetSearch">重置</el-button>
-              </el-form-item>
-            </el-form>
-          </div>
-          <div class="tableControl">
-            <el-button type="success" @click="addMenuBtn">新增</el-button>
-          </div>
-          <div v-loading="tableLoading" class="tableConts">
-            <el-table
-              :data="table.data"
-              border
-              style="width: 100%"
-              @selection-change="handleSelectionChange">
-              <el-table-column
-                fixed
-                prop="ORG_NAME"
-                label="机构名称"
-                width="260"/>
-              <el-table-column
-                prop="ORG_SORT"
-                label="机构排序" />
-              <el-table-column
-                prop="CREATE_DATE"
-                label="创建时间"
-                width="160"/>
-              <el-table-column
-                prop="CREATE_BY"
-                label="创建人"/>
-              <el-table-column
-                fixed="right"
-                label="操作"
-                width="80">
-                <template slot-scope="scope">
-                  <div class="operationConts">
-                    <el-button type="text" size="small" title="编辑" @click="editMenu(scope.row)"><svg-icon icon-class="editBtn" /></el-button>
-                    <el-button type="text" size="small" title="删除" @click="deletMenu(scope.row)"><svg-icon icon-class="deletBtn" /></el-button>
-                  </div>
-                </template>
-              </el-table-column>
-            </el-table>
-            <div>
-              <pagination
-                :total="table.count"
-                :pager="table.param.index"
-                :pagesize="table.param.size"
-                @pagersizechange="pagerSizeChange"
-                @pagerchange="pagerChange"/>
-            </div>
-          </div>
-        </div>
-      </el-col>
-    </el-row>
+  <div class="app-container">
+    <div class="tableOutConts">
+      <div class="searchPanel">
+        <el-form :inline="true" :model="table.param" label-position="top" class="el-form-conts">
+          <el-form-item label="姓氏">
+            <el-input v-model="table.param.surnameName" placeholder="通过姓氏搜索"/>
+          </el-form-item>
+          <el-form-item label="拼音">
+            <el-input v-model="table.param.surnamePinyin" placeholder="通过拼音搜索"/>
+          </el-form-item>
+          <el-form-item label="笔画数">
+            <el-input v-model="table.param.surnameStrokes" type="number" placeholder="通过笔画数搜索"/>
+          </el-form-item>
+          <el-form-item label="是否推荐">
+            <el-select
+              v-model="table.param.surnameRecommend"
+              :clearable="true"
+              placeholder="请选择">
+              <el-option label="否" value="0"/>
+              <el-option label="是" value="1"/>
+            </el-select>
+          </el-form-item>
+          <el-form-item label="操作">
+            <el-button type="primary" icon="el-icon-search" @click="handleSearch">搜索</el-button>
+            <el-button type="primary" icon="el-icon-refresh" @click="resetSearch">重置</el-button>
+          </el-form-item>
+        </el-form>
+      </div>
+      <div class="tableControl">
+        <el-button type="success" @click="addRoleBtn">新增</el-button>
+      </div>
+      <div v-loading="tableLoading" class="tableConts">
+        <el-table
+          v-loading="tableLoading"
+          :data="table.data"
+          border
+          style="width: 100%">
+          <el-table-column
+            prop="SURNAME_NAME"
+            label="姓氏"/>
+          <el-table-column
+            prop="SURNAME_INITIALS"
+            label="首字母"/>
+          <el-table-column
+            prop="SURNAME_PINYIN"
+            label="拼音"/>
 
+          <el-table-column
+            prop="SURNAME_STROKES"
+            label="笔画数"/>
+
+          <el-table-column
+            prop="SURNAME_SORT"
+            label="排序"/>
+          <el-table-column
+            prop="SURNAME_RECOMMEND_NAME"
+            label="是否推荐"/>
+
+          <el-table-column
+            prop="CREATE_BY"
+            label="创建人"/>
+          <el-table-column
+            prop="CREATE_DATE"
+            label="创建时间"
+            width="160"/>
+          <el-table-column
+            fixed="right"
+            label="操作"
+            width="80">
+            <template slot-scope="scope">
+              <div class="operationConts">
+                <el-button type="text" size="small" title="姓氏编辑" @click="editBase(scope.row)"><svg-icon icon-class="editBtn" /></el-button>
+                <el-button type="text" size="small" title="删除姓氏" @click="deletMenu(scope.row)"><svg-icon icon-class="deletBtn" /></el-button>
+              </div>
+            </template>
+          </el-table-column>
+        </el-table>
+        <div>
+          <pagination
+            :total="table.count"
+            :pager="table.param.index"
+            :pagesize="table.param.size"
+            @pagersizechange="pagerSizeChange"
+            @pagerchange="pagerChange"/>
+        </div>
+      </div>
+    </div>
     <!--新增/修改弹出层-->
-    <el-dialog :title="menuControlTitle" :visible.sync="menuControlShow" width="600px" @close="orgManageFormClose">
-      <el-form ref="orgManageForm" :model="orgManageForm" label-position="left" label-width="70px" style="padding: 0 20px;">
+    <el-dialog :title="menuControlTitle" :visible.sync="baseControlShow" width="600px" @close="roleFormClose">
+      <el-form ref="roleForm" :model="roleForm" :rules="rules" label-position="left" label-width="70px" style="padding: 0 20px;">
         <el-form-item
-          :rules="[ { required: true, message: '请输入机构名称', trigger: ['blur'] } ]"
-          label="机构名称"
-          prop="orgName"
+          label="姓氏"
+          prop="surnameName"
           label-width="85px">
-          <el-input v-model="orgManageForm.orgName"/>
+          <el-input v-model="roleForm.surnameName"/>
         </el-form-item>
         <el-form-item
-          :rules="[ { required: true,type: 'number', message: '请输入排序数字', trigger: ['blur'] } ]"
-          label="机构排序"
-          prop="orgSort"
+          label="笔画数"
+          prop="surnameStrokes"
           label-width="85px">
-          <el-input v-model.number="orgManageForm.orgSort" type="number"/>
+          <el-input v-model="roleForm.surnameStrokes" type="number"/>
+        </el-form-item>
+        <el-form-item
+          label="排序"
+          prop="surnameSort"
+          label-width="85px">
+          <el-input v-model="roleForm.surnameSort" type="number"/>
+        </el-form-item>
+        <el-form-item
+          label="是否推荐"
+          prop="surnameRecommend"
+          label-width="85px">
+          <el-select
+            v-model="roleForm.surnameRecommend"
+            style="width: 100%;"
+            placeholder="请选择">
+            <el-option label="否" value="0"/>
+            <el-option label="是" value="1"/>
+          </el-select>
         </el-form-item>
       </el-form>
       <div slot="footer" class="dialog-footer">
-        <el-button @click="menuControlShow = false;">取 消</el-button>
-        <el-button type="primary" @click="orgManageFormAction">确 定</el-button>
+        <el-button @click="baseControlShow = false;">取 消</el-button>
+        <el-button type="primary" @click="roleFormAction">确 定</el-button>
       </div>
     </el-dialog>
+
   </div>
 </template>
 
 <script>
-
-import LeftTree from '@/components/leftTree'
-import { getFwOrgList, getFwOrgById, deleteFwOrgById, addFwOrg, getFwOrgListById, updateFwOrg } from '@/api/systemSet/organization'
+import { isFwDictClasszOnly, addFwDictClassz, deleteFwDictClasszById, updateFwDictClassz, getFwDictClasszById, getFwDictClasszList, addFwDict, deleteFwDictById, updateFwDict, getFwDictById, getFwDictListByCode, findFwDictList, deleteBatchFwDict } from '@/api/dataSet/dictionarySet'
 import pagination from '@/components/pagination'
-import iconSelect from '@/components/iconSelect'
-import 'element-ui/lib/theme-chalk/display.css'
 
 export default {
-  name: 'TreeTableDemo',
-  components: { LeftTree, pagination, iconSelect },
-  data() {
+  components: {
+    pagination
+  },
+  data: function() {
+    var checkRoleCode = (rule, value, callback) => {
+      console.log(2)
+      if (value === '') {
+        callback(new Error('请输入姓氏'))
+      } else if (value !== this.roleForm.surnameNameBase) {
+        isFwSurnameOnly({ surnameName: value }).then(res => {
+          if (res.data) {
+            callback()
+          } else {
+            callback(new Error('姓氏已存在，请重新输入!'))
+          }
+        })
+      } else {
+        callback()
+      }
+    }
+
     return {
-      thiTime: Date.parse(new Date()),
-      /* 对应左边树图的参数
-          * searchTips  ==>搜索栏提示语
-          * treeDate    ==>树图数据
-          * childrenStr ==>子节点数组对象名
-          * labelName   ==>显示部分对应数据里的字段
-          * selectkey   ==>树节点唯一标识 传入ID的key
-          * selectNode  ==>树图加载时默认选中的节点
-          * lefticon    ==>树图图标    不加图标直接设为空
-          * */
-      leftTree: {
-        searchTips: '请输入要搜索的机构名',
-        treeDate: [],
-        childrenStr: 'CHILDREN',
-        labelName: 'ORG_NAME',
-        selectkey: 'ORG_ID',
-        selectNode: '',
-        lefticon: 'tree'
+      rules: {
+        surnameStrokes: [
+          { required: true, message: '请输入笔画数', trigger: ['blur'] }
+        ],
+        surnameName: [
+          { validator: checkRoleCode, trigger: 'blur' },
+          { required: true, message: '请输入姓氏', trigger: ['blur'] }
+        ],
+        surnameSort: [
+          { required: true, message: '请输入姓氏排序', trigger: ['blur'] }
+        ],
+        surnameRecommend: [
+          { required: true, message: '请选择是否推荐', trigger: ['blur'] }
+        ]
       },
       /* 对应表格接口
-          * data            表格数据
-          * param           表格的请求参数
-          * count           总条目数
-          * selectArry      表格选中的数据
-          * tableLoading    表格的加载图 是否显示
+          * index	[string]	是	第几页
+          * size	[string]	是	每页多少条
+          * surnameName	[string]	是	姓氏
+          * surnamePinyin	[string]	是	拼音（模糊匹配）
+          * surnameStrokes	[string]	是	笔画数
           * */
       table: {
         data: [],
         param: {
-          orgId: '',
-          orgName: '',
           index: 1,
-          size: 10
+          size: 10,
+          surnameName: '',
+          surnamePinyin: '',
+          surnameStrokes: ''
         },
         count: 0,
         selectArry: ''
       },
       /* 表格新增/修改相关
-          * orgParentId	[string]	是	父级机构ID,首节点为0
-          * orgName	[string]	是	机构名称
-          * orgSort	[number]	是	排序
-          *
-          * menuControlShow   模态框显示、隐藏
-          * formType          模态框对应事件   1新增 2修改
+          * surnameName	[string]	是	姓氏
+          * surnameStrokes	[number]	是	笔画数
+          * surnameSort	[number]	是	排序
+          * surnameEmblem	[string]	是	图腾
+          * surnameRecommend	[string]	是	是否推荐【0-否、1-是】
           * */
       menuCtlData: {
-        orgParentId: '',
-        orgName: '',
-        orgSort: ''
+        surnameName: '',
+        surnameStrokes: '',
+        surnameSort: '',
+        surnameRecommend: ''
       },
       menuControlTitle: '',
+      baseControlShow: false,
       menuControlShow: false,
+      resControlShow: false,
       tableLoading: true,
       formType: 1,
-      orgManageForm: {}
+      roleForm: {}
     }
   },
-  created() {
-    /* 初始化加载树图*/
-    this.reFlashLeftData('0')
+  created: function() {
+    this.fetchData()
   },
   methods: {
-    /*  右侧表格事件
-        * handleSearch            搜索按钮点击事件
-        * getTypeValue            类型转换
-        * handleSelectionChange   表格多选事件>>>>>>输出选中的表格列
-        * addMenuBtn              表格对应添加按钮的事件   弹出模态框
-        * pagerChange             对应表格下方分页 切换页 的事件
-        * pagerSizeChange         对应表格下方分页 切换每页显示数量 的事件
-        * fetchData               根据数据查询表格
-        * orgManageFormAction           模态框提交确定按钮
-        * */
+    handleClick(row) {
+      console.log(row)
+    },
     handleSearch: function() {
       this.fetchData()
     },
     resetSearch: function() {
       this.table.param = {
-        orgId: this.table.param.orgId,
-        orgName: '',
         index: 1,
-        size: 10
+        size: 10,
+        surnameName: '',
+        surnamePinyin: '',
+        surnameStrokes: ''
       }
       this.fetchData()
-    },
-    getTypeValue: function(str) {
-      let newStr = ''
-      this.typeArry.forEach((a, b) => {
-        if (a.value === str) {
-          newStr = a.name
-        }
-      })
-      return newStr
-    },
-    handleSelectionChange: function(res) {
-      this.table.selectArry = res
     },
     pagerChange: function(pager) {
       this.table.param.index = pager
@@ -220,78 +241,91 @@ export default {
       this.table.param.index = 1
       this.fetchData()
     },
-    orgManageFormClose() {
-      this.$refs['orgManageForm'].clearValidate()
+    roleFormClose() {
+      this.$refs['roleForm'].clearValidate()
     },
-    addMenuBtn() {
+    addRoleBtn() {
       this.menuCtlData = {
-        orgParentId: this.table.param.orgId,
-        orgName: '',
-        orgSort: ''
+        surnameName: '',
+        surnameStrokes: '',
+        surnameSort: '',
+        surnameRecommend: '',
+        surnameNameBase: ''
       }
-      this.orgManageForm = this.menuCtlData
-      this.menuControlTitle = '新增机构'
+      this.roleForm = this.menuCtlData
+      this.menuControlTitle = '新增姓氏'
       this.formType = 1
-      this.menuControlShow = true
+      this.baseControlShow = true
     },
-    editMenu: function(row) {
-      getFwOrgById({ orgId: row.ORG_ID }).then(res => {
-        this.orgManageForm = res.data
-        this.orgManageForm.resourceBasePath = this.orgManageForm.resourcePath
-        this.menuControlTitle = '编辑机构'
+    editBase: function(row) {
+      getFwSurnameById({ surnameId: row.SURNAME_ID }).then(res => {
+        res.data.surnameNameBase = res.data.surnameName
+        this.roleForm = res.data
+        console.log(this.roleForm)
+        this.menuControlTitle = '编辑姓氏'
         this.formType = 2
-        this.menuControlShow = true
+        this.baseControlShow = true
       })
     },
     deletMenu(row) {
-      this.$confirm('删除机构会删除下级所以机构及机构与角色的关系，是否删除机构 ' + row.ORG_NAME + ' ?', '删除提示', {
+      this.$confirm('删除姓氏会删除姓氏的关联信息，是否删除姓氏 ' + row.SURNAME_NAME + ' ?', '删除提示', {
         confirmButtonText: '确定',
         cancelButtonText: '取消',
         type: 'warning'
       }).then(() => {
-        deleteFwOrgById({ orgId: row.ORG_ID }).then(response => {
+        deleteFwSurnameById({ surnameId: row.SURNAME_ID }).then(response => {
           if (response.data) {
             this.$message({
-              message: '恭喜你，删除机构' + row.ORG_NAME + '成功！',
+              message: '恭喜你，删除姓氏' + row.SURNAME_NAME + '成功！',
               type: 'success'
             })
-            this.reFlashLeftData(this.table.param.orgId)
+            this.fetchData()
           } else {
             this.$message.error(response.message)
           }
+        }).catch(() => {
         })
       })
     },
-    orgManageFormAction() {
-      this.$refs['orgManageForm'].validate((valid) => {
+    roleFormAction() {
+      this.$refs['roleForm'].validate((valid) => {
         if (valid) {
+          var SendObj = JSON.parse(JSON.stringify(this.roleForm))
           if (this.formType === 1) {
-            addFwOrg(this.orgManageForm).then(res => {
+            addFwSurname(SendObj).then(res => {
               if (res.data) {
                 this.$message({
-                  message: '恭喜你，添加机构' + this.orgManageForm.orgName + '成功！',
+                  message: '恭喜你，添加姓氏' + SendObj.surnameName + '成功！',
                   type: 'success'
                 })
-                this.reFlashLeftData(this.table.param.orgId)
+                this.fetchData()
               } else {
                 this.$message.error(res.message)
               }
-              this.menuControlShow = false
-              this.$refs['orgManageForm'].clearValidate()
+              this.baseControlShow = false
+              this.roleForm = {
+                roleName: '',
+                roleCode: '',
+                roleSort: ''
+              }
             })
           } else {
-            updateFwOrg(this.orgManageForm).then(res => {
+            updateFwSurname(SendObj).then(res => {
               if (res.data) {
                 this.$message({
-                  message: '恭喜你，修改机构' + this.orgManageForm.orgName + '成功！',
+                  message: '恭喜你，修改姓氏' + SendObj.surnameName + '成功！',
                   type: 'success'
                 })
-                this.reFlashLeftData(this.table.param.orgId)
+                this.fetchData()
               } else {
                 this.$message.error(res.message)
               }
-              this.menuControlShow = false
-              this.$refs['orgManageForm'].clearValidate()
+              this.baseControlShow = false
+              this.roleForm = {
+                roleName: '',
+                roleCode: '',
+                roleSort: ''
+              }
             })
           }
         } else {
@@ -301,36 +335,24 @@ export default {
     },
     fetchData() {
       this.tableLoading = true
-      getFwOrgListById(this.table.param).then(response => {
+      getFwDictClasszList(this.table.param).then(response => {
+        response.data.listMapData.forEach((a, b) => {
+          a.SURNAME_RECOMMEND_NAME = (a.SURNAME_RECOMMEND === '0' ? '否' : '是')
+        })
         this.table.data = response.data.listMapData
         this.table.count = response.data.count
         this.tableLoading = false
-      })
-    },
-    /* 左侧树图methods
-        *   treeNodeClick     树图点击事件>>>>加载右侧表格
-        *   reFlashLeftData   重新加载树图
-        * */
-    treeNodeClick(id) {
-      this.table.param.orgId = id
-      this.fetchData()
-    },
-    reFlashLeftData(id) {
-      this.table.param.orgId = id
-      this.leftTree.selectNode = this.table.param.orgId
-      getFwOrgList().then(response => {
-        this.leftTree.treeDate = [{
-          'ORG_ID': '0',
-          'ORG_PARENT_ID': '',
-          'ORG_NAME': '全部',
-          'CHILDREN': response.data
-        }]
-        this.treeNodeClick(id)
       })
     }
   }
 }
 </script>
-<style>
 
+<style rel="stylesheet/scss" lang="scss" scoped>
+  .centerBlps{
+    max-height:55vh;
+    .el-scrollbar {
+      height: 55vh;
+    }
+  }
 </style>

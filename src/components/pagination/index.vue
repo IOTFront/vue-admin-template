@@ -5,8 +5,8 @@
       :page-sizes="[10, 20, 50, 100]"
       :page-size="pagesize"
       :total="total"
+      :layout="layout?layout:'total, sizes, prev, pager, next, jumper'"
       background
-      layout="total, sizes, prev, pager, next, jumper"
       @size-change="handleSizeChange"
       @current-change="handleCurrentChange"/>
   </div>
@@ -14,7 +14,7 @@
 <script>
 export default {
   /* eslint-disable */
-  props: ['total', 'pagesize', 'pager'],
+  props: ['total', 'pagesize', 'pager','layout'],
   data() {
     return {}
   },

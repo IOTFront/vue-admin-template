@@ -2,7 +2,7 @@
   <div class="app-container">
     <div class="tableOutConts">
       <div class="searchPanel">
-        <el-form :inline="true" :model="table.param"  label-position="top" class="el-form-conts">
+        <el-form :inline="true" :model="table.param" label-position="top" class="el-form-conts">
           <el-form-item label="角色名称">
             <el-input v-model="table.param.roleName" placeholder="通过角色名称搜索"/>
           </el-form-item>
@@ -21,12 +21,22 @@
       <div v-loading="tableLoading" class="tableConts">
         <el-table
           v-loading="tableLoading"
+          ref="roleBaseTable"
           :data="table.data"
           border
+          :row-key="getRowKeys"
           style="width: 100%"
+          @expand-change="showDetail"
+          :expand-row-keys="expands"
           @selection-change="handleSelectionChange">
+          <el-table-column type="expand" width="1" fixed class-name="showMoreUser">
+            <template slot-scope="props">
+              <div class="showRoleTouser">
+                <role-hava-user :key="props.row.ROLE_ID+'-tal'" :roleid="props.row.ROLE_ID" :rolename="props.row.ROLE_NAME"/>
+              </div>
+            </template>
+          </el-table-column>
           <el-table-column
-            fixed
             prop="ROLE_NAME"
             label="角色名称"/>
           <el-table-column
@@ -43,7 +53,6 @@
             label="创建时间"
             width="160"/>
           <el-table-column
-            fixed="right"
             label="操作"
             width="170">
             <template slot-scope="scope">
@@ -51,7 +60,7 @@
                 <el-button type="text" size="small" title="角色编辑" @click="editBase(scope.row)"><svg-icon icon-class="editBtn" /></el-button>
                 <el-button type="text" size="small" title="角色对应资源管理" @click="editRes(scope.row)"><svg-icon icon-class="resourceSet" /></el-button>
                 <el-button type="text" size="small" title="角色对应菜单管理" @click="editMenu(scope.row)"><svg-icon icon-class="menuSet" /></el-button>
-                <el-button type="text" size="small" title="角色对应用户管理" @click="editMenu(scope.row)"><svg-icon icon-class="peoples" /></el-button>
+                <el-button type="text" size="small" title="角色对应用户管理" @click="editUser(scope.row)"><svg-icon icon-class="peoples" /></el-button>
                 <el-button type="text" size="small" title="删除角色" @click="deletMenu(scope.row)"><svg-icon icon-class="deletBtn" /></el-button>
               </div>
             </template>
@@ -145,10 +154,12 @@ import { isRoleCodeOnly, addFwRole, deleteFwRoleById, updateFwRole, updateFwRole
 import { getMenuTree } from '@/api/systemSet/menu'
 import { getFwResList } from '@/api/systemSet/rescourse'
 import pagination from '@/components/pagination'
+import RoleHavaUser from './roleToUser/roleHaveUser'
 
 export default {
   components: {
-    pagination
+    pagination,
+    'role-hava-user': RoleHavaUser
   },
   data: function() {
     var checkRoleCode = (rule, value, callback) => {
@@ -233,7 +244,12 @@ export default {
       resControlShow: false,
       tableLoading: true,
       formType: 1,
-      roleForm: {}
+      roleForm: {},
+      /* 展开的行*/
+      getRowKeys(row) {
+        return row.ROLE_ID;
+      },
+      expands: []
     }
   },
   created: function() {
@@ -331,6 +347,21 @@ export default {
           this.$refs.menuTree.setCheckedKeys(this.menuChecked)
         })
       })
+    },
+    editUser(row) {
+      console.log(this.$refs)
+      this.$refs.roleBaseTable.toggleRowExpansion(row)
+    },
+    showDetail(data,expandedRows) {
+      // 控制只显示当前行
+      if (expandedRows.length) {
+        this.expands = [];
+        if (data) {
+          this.expands.push(data.ROLE_ID);
+        }
+      }else{
+        this.expands = [];
+      }
     },
     deletMenu(row) {
       this.$confirm('删除角色会删除角色的关联信息，是否删除角色 ' + row.ROLE_NAME + ' ?', '删除提示', {
@@ -446,11 +477,18 @@ export default {
 }
 </script>
 
-<style rel="stylesheet/scss" lang="scss" scoped>
+<style rel="stylesheet/scss" lang="scss" >
   .centerBlps{
     max-height:55vh;
     .el-scrollbar {
       height: 55vh;
     }
+  }
+  .showMoreUser .el-icon{
+    display: none;
+  }
+  .showRoleTouser{
+    padding: 20px;
+    background: #f4f4f5;
   }
 </style>
