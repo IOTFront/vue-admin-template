@@ -29,6 +29,7 @@
             <el-table
               v-loading="tableLoading"
               :data="table.data"
+              :ref="roleid+'userTbs'"
               border
               height="247"
               style="width: 100%"
@@ -157,7 +158,7 @@ export default {
       } else {
         this.contLayout = [24, 0]
       }
-      this.$emit('selectUsers',this.selectData);
+      this.$emit('selectUsers', this.selectData)
     }
   },
   created: function() {
@@ -258,9 +259,6 @@ export default {
       this.table.param.index = 1
       this.fetchData()
     },
-    userFormClose() {
-      this.$refs['userForm'].clearValidate()
-    },
     addUserBtn() {
       this.menuCtlData = {
         orgId: [],
@@ -276,189 +274,6 @@ export default {
       this.formType = 1
       this.userEdit = false
       this.menuControlShow = true
-    },
-    editMenu: function(row) {
-      getFwUser({ userId: row.USER_ID }).then(res => {
-        res.data.fwUser.userAccountBase = res.data.fwUser.userAccount
-        this.userForm = res.data.fwUser
-        var NewArry = []
-        res.data.fwOrgMap.forEach((a, b) => {
-          NewArry.push(a.ORG_ID)
-        })
-        this.userForm.orgId = NewArry
-        console.log(this.userForm)
-        this.menuControlTitle = '修改账号所属机构'
-        this.formType = 2
-        this.userEdit = true
-        this.menuControlShow = true
-      })
-    },
-    editRole(row) {
-      this.selectUser = row
-      getFwUserToRole({ userId: row.USER_ID }).then(res => {
-        this.roleChecked = []
-        res.data.forEach((a, b) => {
-          this.roleChecked.push(a.ROLE_ID)
-        })
-        this.roleShow = true
-        this.$nextTick(() => {
-          /* 展开所有节点*/
-          this.$refs.roleTree.setCheckedKeys(this.roleChecked)
-        })
-      })
-    },
-    roleAction() {
-      var sendJSON = {
-        userId: this.selectUser.USER_ID,
-        roleIds: this.$refs.roleTree.getCheckedKeys().toString()
-      }
-      updateFwUserRole(sendJSON).then(response => {
-        if (response.data) {
-          this.$message({
-            message: '恭喜你，已成功修改账号 ' + this.selectUser.USER_ACCOUNT + ' 对应的角色！',
-            type: 'success'
-          })
-          this.fetchData()
-        } else {
-          this.$message.error(response.message)
-        }
-        this.roleShow = false
-      })
-    },
-    deletMenu(row) {
-      this.$confirm('删除账号会删除账号的关联信息，是否删除账号 ' + row.USER_ACCOUNT + ' ?', '删除提示', {
-        confirmButtonText: '确定',
-        cancelButtonText: '取消',
-        type: 'warning'
-      }).then(() => {
-        deleteFwUserById({ userId: row.USER_ID }).then(response => {
-          if (response.data) {
-            this.$message({
-              message: '恭喜你，删除账号' + row.USER_ACCOUNT + '成功！',
-              type: 'success'
-            })
-            this.fetchData()
-          } else {
-            this.$message.error(response.message)
-          }
-        }).catch(() => {
-        })
-      })
-    },
-    changeLocked(row) {
-      var sendJson = {
-        userId: row.USER_ID,
-        userNonlocked: (row.USER_NONLOCKED === '0' ? 1 : 0)
-      }
-      updateFwUserNonlocked(sendJson).then(response => {
-        if (response.data) {
-          this.$message({
-            message: '恭喜你，已成功' + (sendJson.userNonlocked === 0 ? '解锁' : '锁定') + '账号 ' + row.USER_ACCOUNT + '！',
-            type: 'success'
-          })
-          this.fetchData()
-        } else {
-          this.$message.error(response.message)
-        }
-      })
-    },
-    changeExpired(row) {
-      var sendJson = {
-        userId: row.USER_ID,
-        userNonexpired: (row.USER_NONEXPIRED === '0' ? 1 : 0)
-      }
-      updateFwUserNonexpired(sendJson).then(response => {
-        if (response.data) {
-          this.$message({
-            message: '恭喜你，已成功设置' + '账号 ' + row.USER_ACCOUNT + ' 为' + (sendJson.userNonexpired === 0 ? '未过期' : '过期') + '！',
-            type: 'success'
-          })
-          this.fetchData()
-        } else {
-          this.$message.error(response.message)
-        }
-      })
-    },
-    changePwd(row) {
-      this.$prompt('请输入“' + row.USER_ACCOUNT + '”的新密码', '提示', {
-        confirmButtonText: '确定',
-        cancelButtonText: '取消',
-        inputType: 'password',
-        inputPattern: /^(\w){6,20}$/,
-        inputPlaceholder: '请输入6-20位的密码',
-        inputErrorMessage: '请输入6-20位的密码'
-      }).then(({ value }) => {
-        updateUserPassword({
-          userId: row.USER_ID,
-          userPassword: value
-        }).then(response => {
-          if (response.data) {
-            this.$message({
-              message: '恭喜你，账号' + row.USER_ACCOUNT + '的密码修改成功！',
-              type: 'success'
-            })
-            this.fetchData()
-          } else {
-            this.$message.error(response.message)
-          }
-        })
-      }).catch(() => {
-      })
-    },
-    userFormAction() {
-      this.$refs['userForm'].validate((valid) => {
-        if (valid) {
-          var SendObj = JSON.parse(JSON.stringify(this.userForm))
-          SendObj.orgId = SendObj.orgId[SendObj.orgId.length - 1]
-          if (this.formType === 1) {
-            addFwUser(SendObj).then(res => {
-              if (res.data) {
-                this.$message({
-                  message: '恭喜你，添加账号' + SendObj.userAccount + '成功！',
-                  type: 'success'
-                })
-                this.fetchData()
-              } else {
-                this.$message.error(res.message)
-              }
-              this.menuControlShow = false
-              this.userForm = {
-                orgId: this.userForm.orgId,
-                userPassword: '',
-                userAccount: '',
-                userSex: '',
-                userPhoto: '',
-                userMobile: '',
-                userAccountBase: ''
-              }
-            })
-          } else {
-            updateFwUserOrg(SendObj).then(res => {
-              if (res.data) {
-                this.$message({
-                  message: '恭喜你，修改账号' + SendObj.userAccount + '成功！',
-                  type: 'success'
-                })
-                this.fetchData()
-              } else {
-                this.$message.error(res.message)
-              }
-              this.menuControlShow = false
-              this.userForm = {
-                orgId: this.userForm.orgId,
-                userAccount: '',
-                userPassword: '',
-                userSex: '',
-                userPhoto: '',
-                userMobile: '',
-                userAccountBase: ''
-              }
-            })
-          }
-        } else {
-          this.$message.error('请按照提示信息修改错误的内容')
-        }
-      })
     },
     fetchData() {
       this.tableLoading = true
@@ -476,6 +291,24 @@ export default {
         this.table.data = response.data.listMapData
         this.table.count = response.data.count
         this.tableLoading = false
+        var NewArry = []
+        this.table.data.forEach((a) => {
+          var TsBol = false
+          this.selectData.forEach((as) => {
+            if (a.USER_ID === as.USER_ID) {
+              TsBol = true
+            }
+          })
+          if (TsBol) {
+            NewArry.push(a)
+          }
+        })
+        this.$nextTick(function() {
+          NewArry.forEach(row => {
+            this.$refs[this.roleid + 'userTbs'].toggleRowSelection(row)
+          })
+        })
+        console.log(NewArry)
       })
     }
   }
@@ -496,7 +329,8 @@ export default {
     padding: 10px;
     height: 360px;
     .el-button{
-      margin: 10px;
+      margin: 10px 5px;
+      padding: 4px 8px;
     }
   }
 }
