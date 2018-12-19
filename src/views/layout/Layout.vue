@@ -2,7 +2,7 @@
   <div class="appOuterAllCont el-header">
     <div class="appTopBanner">
       <div class="leftConts">
-        <img src="src/assets/tt.jpg" alt="">
+        <img src="static/tt.jpg" alt="">
         <span>图腾框架</span>
       </div>
       <div class="topRightCOnts">
