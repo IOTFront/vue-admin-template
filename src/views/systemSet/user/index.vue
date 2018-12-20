@@ -492,7 +492,6 @@ export default {
       this.$prompt('请输入“' + row.USER_ACCOUNT + '”的新密码', '提示', {
         confirmButtonText: '确定',
         cancelButtonText: '取消',
-        inputType: 'password',
         inputPattern: /^(\w){6,20}$/,
         inputPlaceholder: '请输入6-20位的密码',
         inputErrorMessage: '请输入6-20位的密码'

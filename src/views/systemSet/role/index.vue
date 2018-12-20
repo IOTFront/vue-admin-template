@@ -57,9 +57,9 @@
             <template slot-scope="scope">
               <div class="operationConts">
                 <el-button type="text" size="small" title="角色编辑" @click="editBase(scope.row)"><svg-icon icon-class="editBtn" /></el-button>
-                <el-button type="text" size="small" title="角色对应资源管理" @click="editRes(scope.row)"><svg-icon icon-class="resourceSet" /></el-button>
-                <el-button type="text" size="small" title="角色对应菜单管理" @click="editMenu(scope.row)"><svg-icon icon-class="menuSet" /></el-button>
-                <el-button type="text" size="small" title="角色对应用户管理" @click="editUser(scope.row)"><svg-icon icon-class="peoples" /></el-button>
+                <el-button type="text" size="small" title="资源权限" @click="editRes(scope.row)"><svg-icon icon-class="resourceSet" /></el-button>
+                <el-button type="text" size="small" title="菜单权限" @click="editMenu(scope.row)"><svg-icon icon-class="menuSet" /></el-button>
+                <el-button type="text" size="small" title="角色用户" @click="editUser(scope.row)"><svg-icon icon-class="peoples" /></el-button>
                 <el-button type="text" size="small" title="删除角色" @click="deletMenu(scope.row)"><svg-icon icon-class="deletBtn" /></el-button>
               </div>
             </template>
@@ -218,7 +218,7 @@ export default {
           index: 1,
           size: 10
         },
-        count: 0,
+        count: 0
       },
       /* 表格新增/修改相关
           * roleName	[string]	是	名称

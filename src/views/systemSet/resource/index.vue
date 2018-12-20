@@ -202,7 +202,7 @@ export default {
         labelName: 'RESOURCE_NAME',
         selectkey: 'RESOURCE_ID',
         selectNode: '',
-        lefticon: 'res'
+        lefticon: 'resourceSet'
       },
       /* 对应表格接口
         * data            表格数据

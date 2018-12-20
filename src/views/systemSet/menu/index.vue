@@ -183,7 +183,7 @@ export default {
         labelName: 'MENU_NAME',
         selectkey: 'MENU_ID',
         selectNode: '',
-        lefticon: 'menuIcon'
+        lefticon: 'menuSet'
       },
       /* 对应表格接口
       * data            表格数据
