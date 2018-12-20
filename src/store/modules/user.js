@@ -1,5 +1,6 @@
 import { login, logout, getInfo } from '@/api/login'
-import { getToken, setToken, removeToken, setUser } from '@/utils/auth'
+import { getToken, setToken, removeToken, setUser, removeAll } from '@/utils/auth'
+import { Message } from 'element-ui'
 
 const user = {
   state: {
@@ -68,13 +69,14 @@ const user = {
     // 登出
     LogOut({ commit, state }) {
       return new Promise((resolve, reject) => {
-        logout(state.token).then(() => {
-          commit('SET_TOKEN', '')
-          commit('SET_ROLES', [])
-          removeToken()
-          resolve()
-        }).catch(error => {
-          reject(error)
+        removeAll()
+        Message({
+          message: '退出成功！',
+          type: 'success',
+          duration: 2 * 1000,
+          onClose() {
+            location.reload()
+          }
         })
       })
     },

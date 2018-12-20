@@ -26,3 +26,11 @@ export function removeUser(token) {
 export function removeToken() {
   return Cookies.remove(TokenKey)
 }
+
+export function removeAll() {
+  var keys = Object.keys(Cookies.get())
+  console.log(keys)
+  keys.forEach(function(item) {
+    Cookies.remove(item)
+  })
+}
