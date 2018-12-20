@@ -117,3 +117,22 @@ export function findFwRoleNoToUser(params) {
   })
 }
 
+/* 删除角色用户*/
+export function deleteRoleForUser(params) {
+  return request({
+    url: '/fwRole/deleteRoleForUser',
+    method: 'post',
+    params
+  })
+}
+
+/* 新增角色用户*/
+export function addFwRoleUser(params) {
+  return request({
+    url: '/fwRole/addFwRoleUser',
+    method: 'post',
+    params
+  })
+}
+
+

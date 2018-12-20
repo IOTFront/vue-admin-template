@@ -132,8 +132,6 @@ export default {
         data: [],
         param: {
           userAccount: '',
-          userNonlocked: '',
-          userNonexpired: '',
           orgId: [],
           roleId: this.roleid,
           index: 1,
@@ -182,12 +180,10 @@ export default {
     resetSearch: function() {
       this.table.param = {
         userAccount: '',
-        userNonlocked: '',
-        userNonexpired: '',
         orgId: [],
-        roleId: '',
+        roleId: this.roleid,
         index: 1,
-        size: 10
+        size: 6
       }
       this.fetchData()
     },
@@ -283,22 +279,6 @@ export default {
       this.table.param.size = size
       this.table.param.index = 1
       this.fetchData()
-    },
-    addUserBtn() {
-      this.menuCtlData = {
-        orgId: [],
-        userAccount: '',
-        userPassword: '',
-        userSex: '',
-        userPhoto: '',
-        userMobile: '',
-        userAccountBase: ''
-      }
-      this.userForm = this.menuCtlData
-      this.menuControlTitle = '新增账号'
-      this.formType = 1
-      this.userEdit = false
-      this.menuControlShow = true
     },
     fetchData() {
       this.tableLoading = true

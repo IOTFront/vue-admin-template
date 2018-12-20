@@ -1,6 +1,6 @@
 import request from '@/utils/request'
 
-/* 对接验证字典分类标识是否可用		POST*/
+/* 对接验证字典类型标识是否可用		POST*/
 export function isFwDictClasszOnly(params) {
   return request({
     url: '/fwDictionaryClassz/isFwDictClasszOnly',
@@ -8,7 +8,7 @@ export function isFwDictClasszOnly(params) {
   })
 }
 
-/* 对接新增字典分类					POST*/
+/* 对接新增字典类型					POST*/
 export function addFwDictClassz(params) {
   return request({
     url: '/isFwDictClasszOnly/addFwDictClassz',
@@ -16,7 +16,7 @@ export function addFwDictClassz(params) {
   })
 }
 
-/* 对接通过主键删除字典分类			POST*/
+/* 对接通过主键删除字典类型			POST*/
 export function deleteFwDictClasszById(params) {
   return request({
     url: '/fwDictionaryClassz/deleteFwDictClasszById',
@@ -24,7 +24,7 @@ export function deleteFwDictClasszById(params) {
   })
 }
 
-/* 对接修改字典分类					POST*/
+/* 对接修改字典类型					POST*/
 export function updateFwDictClassz(params) {
   return request({
     url: '/fwDictionaryClassz/updateFwDictClassz',
@@ -32,7 +32,7 @@ export function updateFwDictClassz(params) {
   })
 }
 
-/* 对接通过主键查询字典分类			GET*/
+/* 对接通过主键查询字典类型			GET*/
 export function getFwDictClasszById(params) {
   return request({
     url: '/fwDictionaryClassz/getFwDictClasszById',
@@ -40,10 +40,10 @@ export function getFwDictClasszById(params) {
   })
 }
 
-/* 对接查询所有字典分类				GET*/
-export function getFwDictClasszList(params) {
+/* 对接查询所有字典类型				GET*/
+export function findFwDictClasszList(params) {
   return request({
-    url: '/fwDictionaryClassz/getFwDictClasszList',
+    url: '/fwDictionaryClassz/findFwDictClasszList',
     params
   })
 }
@@ -81,7 +81,7 @@ export function getFwDictById(params) {
   })
 }
 
-/* 对接通过分类标识查询字典数据	GET*/
+/* 对接通过类型标识查询字典数据	GET*/
 export function getFwDictListByCode(params) {
   return request({
     url: '/fwDictionary/getFwDictListByCode',

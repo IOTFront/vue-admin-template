@@ -23,12 +23,11 @@
           v-loading="tableLoading"
           ref="roleBaseTable"
           :data="table.data"
-          border
           :row-key="getRowKeys"
-          style="width: 100%"
-          @expand-change="showDetail"
           :expand-row-keys="expands"
-          @selection-change="handleSelectionChange">
+          border
+          style="width: 100%"
+          @expand-change="showDetail">
           <el-table-column type="expand" width="1" fixed class-name="showMoreUser">
             <template slot-scope="props">
               <div class="showRoleTouser">
@@ -209,7 +208,6 @@ export default {
           * data            表格数据
           * param           表格的请求参数
           * count           总条目数
-          * selectArry      表格选中的数据
           * tableLoading    表格的加载图 是否显示
           * */
       table: {
@@ -221,7 +219,6 @@ export default {
           size: 10
         },
         count: 0,
-        selectArry: ''
       },
       /* 表格新增/修改相关
           * roleName	[string]	是	名称
@@ -247,7 +244,7 @@ export default {
       roleForm: {},
       /* 展开的行*/
       getRowKeys(row) {
-        return row.ROLE_ID;
+        return row.ROLE_ID
       },
       expands: []
     }
@@ -276,9 +273,6 @@ export default {
         size: 10
       }
       this.fetchData()
-    },
-    handleSelectionChange: function(res) {
-      this.table.selectArry = res
     },
     pagerChange: function(pager) {
       this.table.param.index = pager
@@ -349,18 +343,17 @@ export default {
       })
     },
     editUser(row) {
-      console.log(this.$refs)
       this.$refs.roleBaseTable.toggleRowExpansion(row)
     },
-    showDetail(data,expandedRows) {
+    showDetail(data, expandedRows) {
       // 控制只显示当前行
       if (expandedRows.length) {
-        this.expands = [];
+        this.expands = []
         if (data) {
-          this.expands.push(data.ROLE_ID);
+          this.expands.push(data.ROLE_ID)
         }
-      }else{
-        this.expands = [];
+      } else {
+        this.expands = []
       }
     },
     deletMenu(row) {

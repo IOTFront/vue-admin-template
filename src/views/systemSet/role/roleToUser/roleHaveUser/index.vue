@@ -1,12 +1,11 @@
 <template>
   <div class="haveUsers">
     <el-button type="primary" size="mini" icon="el-icon-circle-plus-outline" @click="addUserToRole">添加人员</el-button>
-    <div v-loading="R2UtableLoading" class="tableConts" style="margin-top: 20px;">
+    <div class="tableConts" style="margin-top: 20px;">
       <el-table
         v-loading="R2UtableLoading"
         :data="table.data"
         :key="roleid+'tanleOl'"
-        :row-key="getRowKeys"
         border
         height="235"
         style="width: 100%">
@@ -70,7 +69,10 @@
 import {
   getUserList
 } from '@/api/systemSet/userControl/table'
-
+import {
+  deleteRoleForUser,
+  addFwRoleUser
+} from '@/api/systemSet/role'
 import pagination from '@/components/pagination'
 import roleNoUser from '../roleNoUser'
 
@@ -156,12 +158,13 @@ export default {
         cancelButtonText: '取消',
         type: 'warning'
       }).then(() => {
-        deleteFwUserById({ userId: row.USER_ID }).then(response => {
+        deleteRoleForUser({ userId: row.USER_ID, roleId: this.roleid }).then(response => {
           if (response.data) {
             this.$message({
-              message: '恭喜你，删除账号' + row.USER_ACCOUNT + '成功！',
+              message: '恭喜你，移除账号' + row.USER_ACCOUNT + '成功！',
               type: 'success'
             })
+            this.table.param.index = 1
             this.fetchData()
           } else {
             this.$message.error(response.message)
@@ -179,7 +182,26 @@ export default {
       if (this.selectUserDatas.length <= 0) {
         this.$message.error('请选择要赋予角色‘' + this.rolename + '’的账号！')
       } else {
-        this.roleShowNoSelect = false
+        var NewAry = []
+        this.selectUserDatas.forEach(a => {
+          NewAry.push(a.USER_ID)
+        })
+        addFwRoleUser({
+          roleId: this.roleid,
+          userIds: NewAry.toString()
+        }).then(response => {
+          if (response.data) {
+            this.$message({
+              message: '恭喜你，添加成功！',
+              type: 'success'
+            })
+            this.table.param.index = 1
+            this.fetchData()
+            this.roleShowNoSelect = false
+          } else {
+            this.$message.error(response.message)
+          }
+        })
       }
       this.table.param.index = 1
       this.fetchData()
