@@ -44,7 +44,7 @@
         <el-button type="success" @click="addUserBtn">新增</el-button>
         <el-button type="danger" @click="deleteBatchFwUser">批量删除</el-button>
       </div>
-      <div v-loading="tableLoading" class="tableConts">
+      <div class="tableConts">
         <el-table
           v-loading="tableLoading"
           :data="table.data"
@@ -154,7 +154,7 @@
 
     <!--账户角色弹出层-->
     <el-dialog :visible.sync="roleShow" title="角色管理" width="600px">
-      <div class="centerBlps">
+      <div class="selectRoles">
         <el-scrollbar wrap-class="scrollbar-wrapper">
           <el-tree
             ref="roleTree"
@@ -616,5 +616,8 @@ export default {
   .el-scrollbar {
     height: 55vh;
   }
+}
+.selectRoles{
+  height: 400px;
 }
 </style>
