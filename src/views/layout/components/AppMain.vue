@@ -11,7 +11,7 @@
         active-text-color="#409EFF">
         <transition name="fade" mode="out-in">
           <!-- or name="fade" -->
-          <!-- <router-view :key="key"></router-view> -->
+          <!--<router-view :key="key"></router-view>-->
           <router-view/>
 
         </transition>

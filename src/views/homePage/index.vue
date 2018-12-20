@@ -1,6 +1,7 @@
 <template>
-  <div class="dashboard-container">
-    <h1 style="margin: 100px;text-align: center;color: #304156">图腾框架</h1>
+  <div class="homePage">
+    <h1 style="margin: 100px;">图腾框架</h1>
+    <div><img :src="imgurl" alt=""></div>
   </div>
 </template>
 
@@ -14,10 +15,22 @@ export default {
       'name',
       'roles'
     ])
+  },
+  data: function() {
+    return {
+      imgurl: '/static/logAndTitle.png'
+    }
   }
 }
 </script>
 
 <style rel="stylesheet/scss" lang="scss" scoped>
-
+.homePage{
+  background:#304156;
+  padding: 20px 60px 60px;
+  color:#fff ;
+  text-align: center;
+  margin: 100px auto;
+  width: 60%;
+}
 </style>

@@ -8,6 +8,7 @@ Vue.use(Router)
 
 /* Layout */
 import Layout from '../views/layout/Layout'
+import Frame from '../views/frame/frame'
 
 /**
  * hidden: true                   if `hidden:true` will not show in the sidebar(default is false)
@@ -78,7 +79,7 @@ export const constantRouterMap = [
   },
   {
     path: '/dataSet',
-    component: Layout,
+    component: Frame,
     redirect: '/dataSet/dictionarySet',
     name: '数据管理',
     meta: { title: '数据管理', icon: 'example' },
@@ -145,7 +146,7 @@ export const constantRouterMap = [
 ]
 
 export default new Router({
-  // mode: 'history', //后端支持可开
+  mode: 'history', // 后端支持可开
   scrollBehavior: () => ({ y: 0 }),
   routes: constantRouterMap
 })

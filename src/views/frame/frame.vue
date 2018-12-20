@@ -2,9 +2,10 @@
   <div class="appOuterAllCont el-header">
     <div class="appTopBanner">
       <div class="leftConts">
-        <img :src="logoUrl" alt="">
+        <img src="static/tt.jpg" alt="">
+        <span>框架</span>
       </div>
-      <div class="topRightConts">
+      <div class="topRightCOnts">
         <layoutTop/>
       </div>
     </div>
@@ -20,12 +21,12 @@
 </template>
 
 <script>
-import { Navbar, Sidebar, AppMain } from './components'
-import ResizeMixin from './mixin/ResizeHandler'
-import layoutTop from './components/layoutTop'
+import { Navbar, Sidebar, AppMain } from '../layout/components/index'
+import ResizeMixin from '../layout/mixin/ResizeHandler'
+import layoutTop from '../layout/components/layoutTop'
 
 export default {
-  name: 'Layout',
+  name: 'Frame',
   components: {
     Navbar,
     Sidebar,
@@ -33,11 +34,6 @@ export default {
     layoutTop
   },
   mixins: [ResizeMixin],
-  data: function() {
-    return {
-      logoUrl: '/static/logAndTitle.png'
-    }
-  },
   computed: {
     sidebar() {
       return this.$store.state.app.sidebar
@@ -65,7 +61,7 @@ export default {
 <style rel="stylesheet/scss" lang="scss" scoped>
   @import 'src/styles/mixin.scss';
 
-  .topRightConts{
+  .topRightCOnts{
     float: right;
     height: 60px;
     line-height: 60px;
@@ -77,12 +73,13 @@ export default {
     left: 0;
     width: 100%;
     z-index: 100;
-    background: #304156;
+    background: #231d56;
     border-bottom: 1px solid rgba(28, 146, 34, 0.6);
     .leftConts{
       display: inline-block;
       padding: 10px 20px;
       img{
+        width: 40px;
         height: 40px;
         border-radius: 2px;
       }
