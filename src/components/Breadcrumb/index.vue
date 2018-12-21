@@ -34,7 +34,7 @@ export default {
         }
       })
       const first = matched[0]
-      if (first && first.name !== 'dashboard') {
+      if (first && first.name !== '图腾框架') {
         matched = [{ path: '/', meta: { title: '图腾框架' }}].concat(matched)
       }
       this.levelList = matched

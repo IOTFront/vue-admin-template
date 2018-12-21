@@ -11,15 +11,15 @@ import Layout from '../views/layout/Layout'
 import Frame from '../views/frame/frame'
 
 /**
- * hidden: true                   if `hidden:true` will not show in the sidebar(default is false)
- * alwaysShow: true               if set true, will always show the root menu, whatever its child routes length
- *                                if not set alwaysShow, only more than one route under the children
- *                                it will becomes nested mode, otherwise not show the root menu
- * redirect: noredirect           if `redirect:noredirect` will no redirect in the breadcrumb
- * name:'router-name'             the name is used by <keep-alive> (must set!!!)
+ * hidden: true                   如果`.:true'不会显示在侧栏中（默认为false）
+ * alwaysShow: true               如果设置为true，将始终显示根菜单，无论其子路由长度如何
+ *                                如果未设置alwaysShow，则在子节点下仅多于一条路径
+ *                                它将变成嵌套模式，否则不显示根菜单
+ * redirect: noredirect           如果“重定向：no redirect”在面包屑中不会重定向
+ * name:'router-name'             名称由keep-alive使用（必须设置！！！！）
  * meta : {
-    title: 'title'               the name show in submenu and breadcrumb (recommend set)
-    icon: 'svg-name'             the icon show in the sidebar,
+    title: 'title'                子菜单和面包屑（建议集）中的名称显示
+    icon: 'svg-name'              边栏中显示的图标，
   }
  **/
 export const constantRouterMap = [

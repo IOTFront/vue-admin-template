@@ -166,7 +166,7 @@ export default {
         size: 5,
         dictionaryClasszId: this.classid,
         dictionaryCode: '',
-        dictionaryName: '',
+        dictionaryName: ''
       }
       this.fetchData()
     },

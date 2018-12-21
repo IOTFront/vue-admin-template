@@ -1,8 +1,8 @@
 <template>
   <el-table
+    ref="treeTable"
     :data="formatData"
     :row-style="showRow"
-    ref="treeTable"
     v-bind="$attrs"
     highlight-current-row
     @current-change="handleCurrentChange">
