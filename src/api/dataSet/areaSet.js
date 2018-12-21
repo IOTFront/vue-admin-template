@@ -71,3 +71,12 @@ export function updateFwRegion(params) {
     params
   })
 }
+
+/* 通过主键搜索（递归至首节点）					POST*/
+export function getFwRegionUpper(params) {
+  return request({
+    url: '/fwRegion/getFwRegionUpper',
+    params
+  })
+}
+

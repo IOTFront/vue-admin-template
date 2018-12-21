@@ -81,12 +81,11 @@ export default {
     },
     handleCurrentChange(val) {
       this.$emit('getselecttd',val);
-      console.log(val)
     },
     // 切换下级是否展开
     toggleExpanded: function(trIndex,row) {
-      if(row.children.length<=0){
-        getFwRegionLower({regionId: row.regionId}).then(response => {
+      if(row.REGION_LOWER_SIZE>=row.children.length){
+        getFwRegionLower({regionId: row.REGION_ID}).then(response => {
           response.data.forEach((a, b) => {
             if (a.children === undefined) {
               a.children = []
@@ -105,12 +104,12 @@ export default {
     resetData(data) {
       data.forEach((a, b) => {
         var typeName = ['暂无', '国家', '省份', '城市', '县区', '街道']
-        a.regionType_name = typeName[a.regionType]
+        a.REGION_TYPE_NAME = typeName[a.REGION_TYPE]
       })
     },
     // 图标显示
     iconShow(index, record) {
-      return (index === 0 && record.children )
+      return (index === 0 && record.REGION_LOWER_SIZE )
     }
   }
 }

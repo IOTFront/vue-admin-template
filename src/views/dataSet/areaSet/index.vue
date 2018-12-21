@@ -14,9 +14,9 @@
               placeholder="请输入关键词">
               <el-option
                 v-for="item in searchData"
-                :key="item.regionId"
-                :label="item.regionName"
-                :value="item.regionId"/>
+                :key="item.REGION_ID"
+                :label="item.REGION_NAME"
+                :value="item.REGION_ID"/>
             </el-select>
           </el-form-item>
           <el-form-item label="操作">
@@ -55,18 +55,17 @@
       <el-form ref="roleForm" :model="roleForm" :rules="rules" label-position="left" label-width="70px" style="padding: 0 20px;">
         <el-form-item
           label="上级区划"
-          prop="regionName"
           label-width="85px">
-          <span>{{ selectObj.regionName?selectObj.regionName:'无' }}</span>
+          <span>{{ roleForm.regionParentName }}</span>
         </el-form-item>
         <el-form-item
-          label="区划"
+          label="区划名称"
           prop="regionName"
           label-width="85px">
           <el-input v-model="roleForm.regionName"/>
         </el-form-item>
         <el-form-item
-          label="类型"
+          label="区划类型"
           prop="regionType"
           label-width="85px">
           <el-select
@@ -98,9 +97,9 @@
 </template>
 
 <script>
-import { isFwRegionOnly, loadRegionInfo, getFwRegion, getFwRegionLower, getFwRegionLowerAll, getFwRegionQuery, addFwRegionOn, deleteFwRegionById, updateFwRegion } from '@/api/dataSet/areaSet'
+import { isFwRegionOnly, loadRegionInfo, getFwRegion, getFwRegionLower, getFwRegionLowerAll, getFwRegionQuery, addFwRegionOn, deleteFwRegionById, updateFwRegion, getFwRegionUpper } from '@/api/dataSet/areaSet'
 import treeTable from './TreeTable'
-
+import Json2Tree from '@/utils/tool'
 export default {
   name: 'AreaTreeTable',
   components: { treeTable },
@@ -123,15 +122,15 @@ export default {
       columns: [
         {
           text: '区划名称',
-          value: 'regionName'
+          value: 'REGION_NAME'
         },
         {
           text: '区划排序',
-          value: 'regionSort'
+          value: 'REGION_SORT'
         },
         {
           text: '区划类型',
-          value: 'regionType_name'
+          value: 'REGION_TYPE_NAME'
         }
       ],
       table: {
@@ -184,10 +183,14 @@ export default {
         this.tableLoading = false
       })
     },
-    resetData(data) {
+    resetData(data, searchBol) {
       data.forEach((a, b) => {
         var typeName = ['暂无', '国家', '省份', '城市', '县区', '街道']
-        a.regionType_name = typeName[a.regionType]
+        a.REGION_TYPE_NAME = typeName[a.REGION_TYPE]
+        if (searchBol) {
+          a.show = true
+          a._expanded = true
+        }
       })
     },
     remoteMethod(query) {
@@ -206,9 +209,15 @@ export default {
     handleSearch() {
       this.tableLoading = true
       this.selectObj = {}
-      loadRegionInfo(this.table.paramNext).then(response => {
-        this.table.data = response.data.fwRegionUP
+      getFwRegionUpper(this.table.paramNext).then(response => {
+        this.resetData(response.data, true)
+        this.table.data = Json2Tree(response.data, 'REGION_ID', 'REGION_PARENT_ID', 'children')
         this.tableLoading = false
+        this.$nextTick(() => {
+          var getTreeTable = this.$refs.treeTableOut.$refs.treeTable
+          getTreeTable.setCurrentRow(getTreeTable.data[getTreeTable.data.length - 1])
+          console.log(getTreeTable)
+        })
       })
     },
     resetSearch() {
@@ -222,23 +231,38 @@ export default {
       this.$refs['roleForm'].clearValidate()
     },
     addAreaBtn() {
-      this.menuCtlData = {
-        regionParentId: '',
-        regionName: '',
-        regionType: '',
-        regionSort: ''
+      if (this.selectObj.REGION_ID === undefined) {
+        this.menuCtlData = {
+          regionParentId: '0',
+          regionName: '',
+          regionType: '',
+          regionSort: '',
+          regionParentName: '无'
+        }
+      } else {
+        this.menuCtlData = {
+          regionParentId: this.selectObj.REGION_ID,
+          regionName: '',
+          regionType: '',
+          regionSort: '',
+          regionParentName: this.selectObj.REGION_NAME
+        }
       }
+
       this.roleForm = this.menuCtlData
       this.menuControlTitle = '新增区划'
       this.formType = 1
       this.baseControlShow = true
-      console.log(this)
     },
     editBase: function(row) {
-      getFwRegion({ regionId: row.regionId }).then(res => {
-        res.data.regionNameBase = res.data.regionName
+      var parentName = '无'
+      if (row.parent) {
+        parentName = row.parent.REGION_NAME
+      }
+      console.log(row)
+      getFwRegion({ regionId: row.REGION_ID }).then(res => {
+        res.data.regionParentName = parentName
         this.roleForm = res.data
-        console.log(this.roleForm)
         this.menuControlTitle = '编辑区划'
         this.formType = 2
         this.baseControlShow = true
@@ -248,19 +272,23 @@ export default {
       this.selectObj = row
     },
     deletMenu(row) {
-      console.log(this.$refs.treeTableOut.$refs.treeTable)
-      this.$confirm('删除区划会删除区划的关联信息，是否删除区划 ' + row.regionName + ' ?', '删除提示', {
+      console.log(row)
+      this.$confirm('删除区划会删除区划的关联信息，是否删除区划 ' + row.REGION_NAME + ' ?', '删除提示', {
         confirmButtonText: '确定',
         cancelButtonText: '取消',
         type: 'warning'
       }).then(() => {
-        deleteFwRegionById({ regionId: row.regionId }).then(response => {
+        deleteFwRegionById({ regionId: row.REGION_ID }).then(response => {
           if (response.data) {
             this.$message({
-              message: '恭喜你，删除区划' + row.regionName + '成功！',
+              message: '恭喜你，删除区划' + row.REGION_NAME + '成功！',
               type: 'success'
             })
-            this.fetchData()
+            if (row.parent === undefined) {
+              this.fetchData()
+            } else {
+              this.upDateRow(row.parent)
+            }
           } else {
             this.$message.error(response.message)
           }
@@ -268,19 +296,34 @@ export default {
         })
       })
     },
+    upDateRow(row) {
+      getFwRegionLower({ regionId: row.REGION_ID }).then(response => {
+        response.data.forEach((a, b) => {
+          if (a.children === undefined) {
+            a.children = []
+          }
+        })
+        this.resetData(response.data)
+        row.children = response.data
+        row.REGION_LOWER_SIZE++
+      })
+    },
     roleFormAction() {
       this.$refs['roleForm'].validate((valid) => {
         if (valid) {
           var SendObj = JSON.parse(JSON.stringify(this.roleForm))
           if (this.formType === 1) {
-            SendObj.regionParentId = this.selectObj.regionId ? this.selectObj.regionId : 0
             addFwRegionOn(SendObj).then(res => {
               if (res.data) {
                 this.$message({
                   message: '恭喜你，添加区划' + SendObj.regionName + '成功！',
                   type: 'success'
                 })
-                this.fetchData()
+                if (this.selectObj.REGION_ID === undefined) {
+                  this.fetchData()
+                } else {
+                  this.upDateRow(this.selectObj)
+                }
               } else {
                 this.$message.error(res.message)
               }
@@ -299,7 +342,11 @@ export default {
                   message: '恭喜你，修改区划' + SendObj.regionName + '成功！',
                   type: 'success'
                 })
-                this.fetchData()
+                this.selectObj.REGION_NAME = SendObj.regionName
+                this.selectObj.REGION_SORT = SendObj.regionSort
+                var typeName = ['暂无', '国家', '省份', '城市', '县区', '街道']
+                this.selectObj.REGION_TYPE = SendObj.regionType
+                this.selectObj.REGION_TYPE_NAME = typeName[SendObj.regionType]
               } else {
                 this.$message.error(res.message)
               }
