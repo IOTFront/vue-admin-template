@@ -79,7 +79,7 @@ export const constantRouterMap = [
   },
   {
     path: '/dataSet',
-    component: Frame,
+    component: Layout,
     redirect: '/dataSet/dictionarySet',
     name: '数据管理',
     meta: { title: '数据管理', icon: 'example' },
