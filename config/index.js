@@ -11,7 +11,7 @@ module.exports = {
     assetsPublicPath: '/',
     proxyTable: {
       '/JointatTotems':{
-        target:'http://192.168.0.215:8090',
+        target:'http://120.76.26.175:8092',
         changeOrigin:true,
         pathRewrith:{
           '^/JointatTotems': '/JointatTotems'

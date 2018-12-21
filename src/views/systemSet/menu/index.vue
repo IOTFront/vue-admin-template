@@ -233,6 +233,7 @@ export default {
   },
   created() {
     /* 初始化加载树图*/
+    console.log(this)
     this.reFlashLeftData('0')
   },
   methods: {

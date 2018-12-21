@@ -10,7 +10,9 @@
 
     <el-dropdown class="avatar-container" trigger="click">
       <div class="avatar-wrapper">
-        <img :src="users.userPhoto" :title="users.userName" class="user-avatar">
+        <el-tooltip :content="users.userAccount" effect="dark" placement="bottom">
+          <img :src="users.userPhoto?users.userPhoto:'/static/default.gif'" class="user-avatar">
+        </el-tooltip>
         <i class="el-icon-caret-bottom"/>
       </div>
       <el-dropdown-menu slot="dropdown" class="user-dropdown">
@@ -53,7 +55,6 @@ export default {
       this.$store.dispatch('toggleSideBar')
     },
     logout() {
-      console.log(this.users)
       this.$store.dispatch('LogOut').then(() => {
         location.reload()// In order to re-instantiate the vue-router object to avoid bugs
       })

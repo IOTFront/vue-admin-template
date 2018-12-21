@@ -39,6 +39,8 @@ const user = {
           setToken(JSON.stringify(data.fwUserToMenu))
           setUser(JSON.stringify(data.fwUser))
           commit('SET_TOKEN', data)
+          commit('SET_USER', data.fwUser)
+          commit('SET_NAME', data.fwUser.userAccount)
           resolve()
         }).catch(error => {
           reject(error)
@@ -57,7 +59,7 @@ const user = {
             commit('SET_ROLES', '')
           }
           commit('SET_NAME', data.userName)
-          commit('SET_USER', data)
+          // commit('SET_USER', data)
 
           resolve(response)
         }).catch(error => {
